@@ -1,7 +1,8 @@
 #include "core.hpp"
 
-void init() 
-{ 
+ObjectList objects;
+
+void init() { 
     // background color 
     glClearColor(0.0, 0.0, 0.0, 1.0); 
       
@@ -17,20 +18,29 @@ void init()
     gluOrtho2D(-780, 780, -420, 420); 
 } 
   
-void display()  
-{ 
+void display() {
     glClear(GL_COLOR_BUFFER_BIT); 
-    glBegin(GL_POINTS); 
-    glEnd(); 
-    glFlush(); 
+    for (int i = 0; i < objects.size(); i++) {
+        objects[i]->draw();
+        if (objects[i]->isColliding(objects, i)) {
+            std::cout << "Collision detected with object: " << objects[i]->toString() << std::endl;
+        }
+    }
+
+    for (auto& object : objects) {
+        object->update();
+    }
+    glFlush();
+    glutPostRedisplay();
 } 
   
-int main(int argc, char** argv) 
-{ 
+int main(int argc, char** argv) { 
+    objects.push_back(std::make_unique<Circle>(Circle(0, 0, 50)));
+    objects.push_back(std::make_unique<Rectangle>(Rectangle(100, 0, 200, 100)));
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); 
       
-    // giving window size in X- and Y- direction 
+    // giving window size in X- and Y- directon 
     glutInitWindowSize(1366, 768); 
     glutInitWindowPosition(0, 0); 
       
@@ -40,4 +50,6 @@ int main(int argc, char** argv)
       
     glutDisplayFunc(display); 
     glutMainLoop(); 
+    
+    return 0;
 } 
