@@ -37,6 +37,7 @@ void display() {
 int main(int argc, char** argv) { 
     objects.push_back(std::make_unique<Circle>(Circle(0, 0, 50)));
     objects.push_back(std::make_unique<Rectangle>(Rectangle(100, 0, 200, 100)));
+    objects[1]->setCenterY(0);
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); 
       

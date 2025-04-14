@@ -31,6 +31,19 @@ public:
     std::string toString() const {
         return "Rectangle(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ")";
     }
+
+    void setCenter(Vector center) override {
+        position.x = center.x - width / 2;
+        position.y = center.y - height / 2;
+    }
+
+    void setCenterX(float centerX) override {
+        position.x = centerX - width / 2;
+    }
+
+    void setCenterY(float centerY) override {
+        position.y = centerY - height / 2;
+    }
 };
 
 class Circle : public Object {
@@ -64,6 +77,19 @@ public:
 
     std::string toString() const {
         return "Circle(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(radius) + ")";
+    }
+
+    void setCenter(Vector center) override {
+        position.x = center.x;
+        position.y = center.y;
+    }
+
+    void setCenterX(float centerX) override {
+        position.x = centerX;
+    }
+
+    void setCenterY(float centerY) override {
+        position.y = centerY;
     }
 };
 

@@ -50,6 +50,18 @@ public:
     virtual std::string toString() const {
         return "Object(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ")";
     }
+
+    virtual void setCenter(Vector center) {
+        // Placeholder for setting the center of the object
+    }
+
+    virtual void setCenterX(float centerX) {
+        // Placeholder for setting the center X coordinate of the object
+    }
+    
+    virtual void setCenterY(float centerY) {
+        // Placeholder for setting the center Y coordinate of the object
+    }
 };
 
 #endif // OBJECT_HPP
