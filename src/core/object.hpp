@@ -64,4 +64,30 @@ public:
     }
 };
 
+class MoveableObject{
+public:
+    Vector velocity;
+    Vector acceleration;
+    MoveableObject() :
+        velocity(0, 0),
+        acceleration(0, 0) {}
+};
+
+class WithGravity : public MoveableObject {
+public:
+    WithGravity() : MoveableObject() {}
+    void updateGravity() {
+        applyGravity();
+        applyAcceleration();
+    }
+    
+    void applyGravity() {
+        velocity.y += gravity;
+    }
+
+    void applyAcceleration() {
+        velocity.y += acceleration.y;
+    }
+};
+
 #endif // OBJECT_HPP
