@@ -24,7 +24,7 @@ public:
         glRectf(position.x, position.y, position.x + width, position.y + height);
     }
 
-    virtual void update() {
+    virtual void update() override {
         ;
     }
 
@@ -71,9 +71,9 @@ public:
         glEnd();
     }
 
-    virtual void update() {
+    virtual void update() override {
         ;
-    }
+    } 
 
     std::string toString() const {
         return "Circle(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(radius) + ")";
