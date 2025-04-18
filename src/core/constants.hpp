@@ -16,4 +16,9 @@ inline float gravity = 0.5f;
 inline float acceleration = 1.f;
 inline float friction = -0.12f;
 inline int fps = 60;
+#define TOP_COLLISION 0b1000
+#define BOTTOM_COLLISION 0b0100
+#define LEFT_COLLISION 0b0010
+#define RIGHT_COLLISION 0b0001
+#define epsilon 0.0001f
 #endif // CONSTANTS_HPP
