@@ -22,15 +22,21 @@ void init() {
 void display() {
     glClear(GL_COLOR_BUFFER_BIT); 
     for (int i = 0; i < objects.size(); i++) {
-        objects[i]->draw();
-        if (objects[i]->isColliding(objects, i)) {
-            std::cout << "Collision detected with object: " << objects[i]->toString() << std::endl;
+        if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
+            for (int j = 0; j < objects.size(); j++) {
+                if (i != j && objects[i]->isColliding(*objects[j])) {
+                    collision->setCollisionDirection(*objects[i], *objects[j]);
+                    std::printf("Collision\n");
+                }
+            }
         }
+        objects[i]->update();
     }
 
-    for (auto& object : objects) {
-        object->update();
+    for (int i = 0; i < objects.size(); i++) {
+        objects[i]->draw();
     }
+
     glFlush();
     glutPostRedisplay();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
@@ -43,6 +49,7 @@ int main(int argc, char** argv) {
     objects[1]->setCenterY(RESOLUTION_HEIGHT / 2);
     objects.push_back(std::make_unique<Rectangle>(Rectangle(0, RESOLUTION_HEIGHT - 50, RESOLUTION_WIDTH, 50)));
     objects[2]->setCenterX(RESOLUTION_WIDTH / 2);
+    objects[2]->setCenterY(RESOLUTION_HEIGHT - 200);
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); 
       
