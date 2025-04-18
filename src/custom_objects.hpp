@@ -2,7 +2,7 @@
 #define CUSTOM_OBJECTS_HPP
 #include "core/core.hpp"
 
-class MyCircle : public Circle, public WithGravity {
+class MyCircle : public Circle, public WithGravity, public Collision {
 public:
     MyCircle(int x, int y, float radius) :
         Circle(x, y, radius) {}
@@ -11,6 +11,7 @@ public:
 
     void update() override {
         updateGravity();
+        applyCollisions(velocity, acceleration);
         position += velocity;
     }
 
