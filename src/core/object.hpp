@@ -83,18 +83,18 @@ public:
     virtual void setTopRightY(float topRightY) {}
 };
 
-class MoveableObject {
+class Moveable {
 public:
     Vector velocity;
     Vector acceleration;
-    MoveableObject() :
+    Moveable() :
         velocity(0, 0),
         acceleration(0, 0) {}
 };
 
-class WithGravity : public MoveableObject {
+class WithGravity : public Moveable {
 public:
-    WithGravity() : MoveableObject() {}
+    WithGravity() : Moveable() {}
     void updateGravity() {
         applyGravity();
         applyAcceleration();
