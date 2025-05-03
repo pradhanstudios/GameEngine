@@ -3,20 +3,24 @@
 
 #include "constants.hpp"
 #include "vector.hpp"
+#include "texture.hpp"
 
 class Object {
 public:
     Vector position;
     int width;
     int height;
-    Object(int x, int y, int width, int height) :
+    Texture* texture;
+    Object(int x, int y, int width, int height, Texture* texture=nullptr) :
         position(x, y),
         width(width),
-        height(height) {}
-    Object(Vector position, int width, int height) :
+        height(height),
+	texture(texture) {}
+    Object(Vector position, int width, int height, Texture* texture=nullptr) :
         position(position),
         width(width),
-        height(height) {}
+        height(height),
+	    texture(texture) {}
     
     virtual bool isInside(Vector point) {
         // Placeholder for inside check logic
@@ -38,6 +42,16 @@ public:
         
         return false;
     } 
+
+    void bindTexture() {
+        if (texture)
+            glBindTexture(GL_TEXTURE_2D, texture->textureID);
+    }
+
+    void unBindTexture() {
+        if (texture)
+            glBindTexture(GL_TEXTURE_2D, 0);
+    }
 
     virtual void draw() {
         // Placeholder for drawing logic
