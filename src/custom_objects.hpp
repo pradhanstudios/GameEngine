@@ -4,10 +4,10 @@
 
 class MyCircle : public Circle, public WithGravity, public Collision {
 public:
-    MyCircle(int x, int y, float radius) :
-        Circle(x, y, radius) {}
-    MyCircle(Vector position, float radius) :
-        Circle(position, radius) {}
+    MyCircle(int x, int y, float radius, Texture* textureID) :
+        Circle(x, y, radius, texture) {}
+    MyCircle(Vector position, float radius, Texture* textureID) :
+        Circle(position, radius, texture) {}
 
     void update() override {
         updateGravity();
