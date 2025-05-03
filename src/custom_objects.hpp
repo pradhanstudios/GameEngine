@@ -4,9 +4,9 @@
 
 class MyCircle : public Circle, public WithGravity, public Collision {
 public:
-    MyCircle(int x, int y, float radius, Texture* textureID) :
+    MyCircle(int x, int y, float radius, Texture* texture) :
         Circle(x, y, radius, texture) {}
-    MyCircle(Vector position, float radius, Texture* textureID) :
+    MyCircle(Vector position, float radius, Texture* texture) :
         Circle(position, radius, texture) {}
 
     void update() override {
