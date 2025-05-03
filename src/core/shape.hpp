@@ -7,11 +7,11 @@
 
 class Rectangle : public Object {
 public:
-    Rectangle(int x, int y, int width, int height) :
-        Object(x, y, width, height) {}
+    Rectangle(int x, int y, int width, int height, Texture* texture=nullptr) :
+        Object(x, y, width, height, texture) {}
 
-    Rectangle(Vector position, int width, int height) :
-        Object(position, width, height) {}
+    Rectangle(Vector position, int width, int height, Texture* textureID=nullptr) :
+        Object(position, width, height, texture) {}
 
     bool isInside(Vector point) override {
         return (point.x >= position.x && point.x <= position.x + width &&
@@ -21,7 +21,9 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
+        bindTexture();
         glRectf(position.x, position.y, position.x + width, position.y + height);
+        unBindTexture();
     }
 
     virtual void update() override {
@@ -161,11 +163,11 @@ public:
 class Circle : public Object {
 public:
     float radius;
-    Circle(int x, int y, float radius) :
-        Object(x, y, radius * 2, radius * 2), radius(radius) {}
+    Circle(int x, int y, float radius, Texture* texture=nullptr) :
+        Object(x, y, radius * 2, radius * 2, texture), radius(radius) {}
 
-    Circle(Vector position, float radius) :
-        Object(position, radius * 2, radius * 2), radius(radius) {}
+    Circle(Vector position, float radius, Texture* texture=nullptr) :
+        Object(position, radius * 2, radius * 2, texture), radius(radius) {}
 
     bool isInside(Vector point) override {
         return position.distanceTo(point) <= radius;
@@ -174,13 +176,38 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
-        glBegin(GL_TRIANGLE_FAN);
-            glVertex2f(position.x, position.y);
-            for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
-                float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
-                glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
-            }
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        bindTexture();
+        // glBegin(GL_TRIANGLE_FAN);
+        //     glTexCoord2f(0.5f, 0.5f);
+        //     glVertex2f(position.x, position.y);
+        //     for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
+        //         float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
+        //         float x = radius * cos(angle);
+        //         float y = radius * sin(angle);
+        //         float texScale = 0.1f;
+        //         glTexCoord2f(0.5f + x * texScale, 0.5f + y * texScale);
+        //         glVertex2f(position.x + radius * x, position.y + radius * y);
+        //     }
+        // glEnd();
+        // unBindTexture();
+        // glDisable(GL_TEXTURE_2D);
+        float quadSize = radius;
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(position.x - quadSize, position.y - quadSize);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(position.x + quadSize, position.y - quadSize);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(position.x + quadSize, position.y + quadSize);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(position.x - quadSize, position.y + quadSize);
         glEnd();
+        unBindTexture();
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
     }
 
     virtual void update() override {
