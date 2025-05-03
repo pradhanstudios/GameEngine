@@ -43,14 +43,21 @@ public:
         return false;
     } 
 
-    void bindTexture() {
-        if (texture)
+    void initDraw() {
+        if (texture) {
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glBindTexture(GL_TEXTURE_2D, texture->textureID);
+        }
     }
 
-    void unBindTexture() {
-        if (texture)
+    void unInitDraw() {
+        if (texture != nullptr) {
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
 
     virtual void draw() {
