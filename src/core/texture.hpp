@@ -3,6 +3,13 @@
 
 #include "constants.hpp"
 
-GLuint loadBMPTexture(const char* filename);
+struct Texture {
+    int height, width;
+    GLuint textureID;
+
+    Texture() : textureID(0), height(0), width(0) {}
+};
+
+Texture loadBMPTexture(const char* filename);
 
 #endif // TEXTURE_HPP
