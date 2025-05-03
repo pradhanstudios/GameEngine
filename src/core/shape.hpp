@@ -10,7 +10,7 @@ public:
     Rectangle(int x, int y, int width, int height, Texture* texture=nullptr) :
         Object(x, y, width, height, texture) {}
 
-    Rectangle(Vector position, int width, int height, Texture* textureID=nullptr) :
+    Rectangle(Vector position, int width, int height, Texture* texture=nullptr) :
         Object(position, width, height, texture) {}
 
     bool isInside(Vector point) override {
@@ -21,9 +21,18 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
-        bindTexture();
-        glRectf(position.x, position.y, position.x + width, position.y + height);
-        unBindTexture();
+        initDraw();
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(position.x, position.y);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(position.x + width, position.y);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(position.x + width, position.y + height);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(position.x, position.y + height);
+        glEnd();
+        unInitDraw();
     }
 
     virtual void update() override {
@@ -176,10 +185,7 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        bindTexture();
+        initDraw();
         // glBegin(GL_TRIANGLE_FAN);
         //     glTexCoord2f(0.5f, 0.5f);
         //     glVertex2f(position.x, position.y);
@@ -194,20 +200,17 @@ public:
         // glEnd();
         // unBindTexture();
         // glDisable(GL_TEXTURE_2D);
-        float quadSize = radius;
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f);
-            glVertex2f(position.x - quadSize, position.y - quadSize);
+            glVertex2f(position.x - radius, position.y - radius);
             glTexCoord2f(1.0f, 0.0f);
-            glVertex2f(position.x + quadSize, position.y - quadSize);
+            glVertex2f(position.x + radius, position.y - radius);
             glTexCoord2f(1.0f, 1.0f);
-            glVertex2f(position.x + quadSize, position.y + quadSize);
+            glVertex2f(position.x + radius, position.y + radius);
             glTexCoord2f(0.0f, 1.0f);
-            glVertex2f(position.x - quadSize, position.y + quadSize);
+            glVertex2f(position.x - radius, position.y + radius);
         glEnd();
-        unBindTexture();
-        glDisable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
+        unInitDraw();
     }
 
     virtual void update() override {
