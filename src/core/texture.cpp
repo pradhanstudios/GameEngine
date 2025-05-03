@@ -1,43 +1,74 @@
 #include "texture.hpp"
 
-GLuint loadBMPTexture(const char* filename) {
+Texture loadBMPTexture(const char* filename) {
+	const GLubyte* renderer = glGetString(GL_RENDERER);
+	const GLubyte* version = glGetString(GL_VERSION);
+
+    Texture texture;
+
+	if (!renderer || !version) {
+	    printf("OpenGL context is not active\n");
+	    return texture;
+	}
+
+	printf("Renderer: %s\n", renderer);
+	printf("OpenGL version: %s\n", version);
 	FILE* file = fopen(filename, "rb");
-	unsigned char *imageData;
+
+	if (!file) {
+		printf("Could not open file %s", filename);
+		return texture;
+	}
+
 	unsigned char header[54];
-	unsigned int height;
-	unsigned int width;
-	unsigned int imageSize; // width * height * 3 because there are three color channels
+
 	if (fread(header, 1, 54, file) != 54) { // not 54 bytes
 		printf("Not a BMP file or formatted incorrectly");
-		return 0;
+		return texture;
 	}
 
 	// check if it is actually a BMP file
 	if (header[0] != 'B' || header[1] != 'M') {
 		printf("Not a BMP file or formatted incorrectly");
-		return 0;
+		return texture;
 	}
 
 	// Collect information from the headers
 	// About *( int* ) &, we are converting the value into a char *, and then converting it to int *, and then getting the value
-	width = *( int* ) &(header[0x12]);	
-	height = *( int* ) &(header[0x16]);
-	imageSize = width * height * 3;
+	texture.width = *( int* ) &(header[0x12]);	
+	texture.height = *( int* ) &(header[0x16]);
+	unsigned int imageSize = texture.width * texture.height * 3;
+	printf("Width: %u, Height: %u, Image Size: %u\n", texture.width, texture.height, imageSize);
 
 	// Allocate memory for the image data
-	imageData = new unsigned char[imageSize];
+	unsigned char* imageData = new unsigned char[imageSize];
 	// Read the data
-	fread(imageData, 1, imageSize, file);
+	if (fread(imageData, 1, imageSize, file) != imageSize) {
+		printf("Could not read image data");
+		delete[] imageData;
+		fclose(file);
+		return texture;
+	}
+
 	fclose(file);
-	GLuint textureID;
 	// Generate Texture ID
-	glGenTextures(1, &textureID);
+	glGenTextures(1, &texture.textureID);
 	// Bind the Texture ID
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, texture.textureID);
 	// Give the image data to openGL and link it to the Texture ID 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	delete[] imageData;
 
-	return textureID;
+	if (glGetError() != GL_NO_ERROR) {
+		printf("Error loading texture");
+		glDeleteTextures(1, &texture.textureID);
+		return texture;
+	}
+
+	return texture;
 }
