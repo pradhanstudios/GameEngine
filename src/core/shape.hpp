@@ -7,11 +7,11 @@
 
 class Rectangle : public Object {
 public:
-    Rectangle(int x, int y, int width, int height) :
-        Object(x, y, width, height) {}
+    Rectangle(int x, int y, int width, int height, Texture* texture=nullptr) :
+        Object(x, y, width, height, texture) {}
 
-    Rectangle(Vector position, int width, int height) :
-        Object(position, width, height) {}
+    Rectangle(Vector position, int width, int height, Texture* texture=nullptr) :
+        Object(position, width, height, texture) {}
 
     bool isInside(Vector point) override {
         return (point.x >= position.x && point.x <= position.x + width &&
@@ -21,7 +21,18 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
-        glRectf(position.x, position.y, position.x + width, position.y + height);
+        initDraw();
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(position.x, position.y);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(position.x + width, position.y);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(position.x + width, position.y + height);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(position.x, position.y + height);
+        glEnd();
+        unInitDraw();
     }
 
     virtual void update() override {
@@ -161,11 +172,11 @@ public:
 class Circle : public Object {
 public:
     float radius;
-    Circle(int x, int y, float radius) :
-        Object(x, y, radius * 2, radius * 2), radius(radius) {}
+    Circle(int x, int y, float radius, Texture* texture=nullptr) :
+        Object(x, y, radius * 2, radius * 2, texture), radius(radius) {}
 
-    Circle(Vector position, float radius) :
-        Object(position, radius * 2, radius * 2), radius(radius) {}
+    Circle(Vector position, float radius, Texture* texture=nullptr) :
+        Object(position, radius * 2, radius * 2, texture), radius(radius) {}
 
     bool isInside(Vector point) override {
         return position.distanceTo(point) <= radius;
@@ -174,13 +185,38 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glEnable(GL_STENCIL_TEST);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        
         glBegin(GL_TRIANGLE_FAN);
-            glVertex2f(position.x, position.y);
-            for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
-                float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
-                glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
-            }
+             glVertex2f(position.x, position.y);
+             for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
+                 float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
+                 glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
+             }
         glEnd();
+
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glStencilFunc(GL_EQUAL, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+        initDraw();
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(position.x - radius, position.y - radius);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(position.x + radius, position.y - radius);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(position.x + radius, position.y + radius);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(position.x - radius, position.y + radius);
+        glEnd();
+
+        glDisable(GL_STENCIL_TEST);
+        unInitDraw();
     }
 
     virtual void update() override {
