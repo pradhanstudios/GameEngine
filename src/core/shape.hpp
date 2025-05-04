@@ -185,21 +185,25 @@ public:
     bool isColliding(Object& other) override;
 
     void draw() override {
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glEnable(GL_STENCIL_TEST);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        
+        glBegin(GL_TRIANGLE_FAN);
+             glVertex2f(position.x, position.y);
+             for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
+                 float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
+                 glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
+             }
+        glEnd();
+
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glStencilFunc(GL_EQUAL, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
         initDraw();
-        // glBegin(GL_TRIANGLE_FAN);
-        //     glTexCoord2f(0.5f, 0.5f);
-        //     glVertex2f(position.x, position.y);
-        //     for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
-        //         float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
-        //         float x = radius * cos(angle);
-        //         float y = radius * sin(angle);
-        //         float texScale = 0.1f;
-        //         glTexCoord2f(0.5f + x * texScale, 0.5f + y * texScale);
-        //         glVertex2f(position.x + radius * x, position.y + radius * y);
-        //     }
-        // glEnd();
-        // unBindTexture();
-        // glDisable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 0.0f);
             glVertex2f(position.x - radius, position.y - radius);
@@ -210,6 +214,8 @@ public:
             glTexCoord2f(0.0f, 1.0f);
             glVertex2f(position.x - radius, position.y + radius);
         glEnd();
+
+        glDisable(GL_STENCIL_TEST);
         unInitDraw();
     }
 
