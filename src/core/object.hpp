@@ -53,7 +53,7 @@ public:
     }
 
     void unInitDraw() {
-        if (texture != nullptr) {
+        if (texture) {
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, 0);
