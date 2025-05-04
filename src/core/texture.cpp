@@ -37,26 +37,25 @@ Texture loadBMPTexture(const char* filename) {
 	// About *( int* ) &, we are converting the value into a char *, and then converting it to int *, and then getting the value
 	texture.width = *( int* ) &(header[0x12]);	
 	texture.height = *( int* ) &(header[0x16]);
-	unsigned int imageSize = texture.width * texture.height * 3;
+    int bitsPerPixel = *( int* ) &(header[0x1C]);
+    int rowSize = (texture.width * 3 + 3) & (~3);
+	unsigned int imageSize = rowSize * texture.height;
 	printf("Width: %u, Height: %u, Image Size: %u\n", texture.width, texture.height, imageSize);
 
 	// Allocate memory for the image data
 	unsigned char* imageData = new unsigned char[imageSize];
-	// Read the data
-	if (fread(imageData, 1, imageSize, file) != imageSize) {
-		printf("Could not read image data");
-		delete[] imageData;
-		fclose(file);
-		return texture;
-	}
+    for (int i = 0; i < texture.height; i++) {
+        fread(imageData + (texture.height - 1 - i) * rowSize, 1, rowSize, file);
+    }
 
-	fclose(file);
+    fclose(file);
 	// Generate Texture ID
 	glGenTextures(1, &texture.textureID);
 	// Bind the Texture ID
 	glBindTexture(GL_TEXTURE_2D, texture.textureID);
 	// Give the image data to openGL and link it to the Texture ID 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
+    printf("got here\n");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
