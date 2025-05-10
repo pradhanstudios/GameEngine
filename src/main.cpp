@@ -61,10 +61,13 @@ int main(int argc, char** argv) {
     init(); 
 
     Texture rickroll = loadBMPTexture("assets/rickroll.bmp");
+    Font roboto = Font("assets/Roboto.ttf");
+    Texture Char_A = roboto.getCharacter('A');
+
 
     printf("GLuint for rickroll: %i\n", rickroll.textureID);
     printf("Address of rickroll: %p\n", &rickroll);
-    objects.push_back(std::make_unique<MyCircle>(MyCircle(RESOLUTION_WIDTH / 3, 0, 50, &rickroll)));
+    objects.push_back(std::make_unique<MyCircle>(MyCircle(RESOLUTION_WIDTH / 3, 0, 50, &Char_A)));
     objects[0]->setCenterY(RESOLUTION_HEIGHT / 2);
     objects.push_back(std::make_unique<Rectangle>(Rectangle(RESOLUTION_WIDTH / 3 * 2, 0, 200, 100, &rickroll)));
     objects[1]->setCenterY(RESOLUTION_HEIGHT / 2);
