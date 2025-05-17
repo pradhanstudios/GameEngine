@@ -4,5 +4,6 @@
 #include "shape.hpp"
 #include "texture.hpp"
 #include "font.hpp"
+#include "shaders.hpp"
 #include <chrono>
 #include <thread>
