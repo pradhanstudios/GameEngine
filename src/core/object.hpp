@@ -22,19 +22,19 @@ public:
         height(height),
 	    texture(texture) {}
     
-    virtual bool isInside(Vector point) {
+    virtual bool isInside(Vector) {
         // Placeholder for inside check logic
         return false;
     }
 
-    virtual bool isColliding(Object& other) {
+    virtual bool isColliding(Object&) {
         // Placeholder for collision detection logic
         return false;
     }
 
-    bool isColliding(ObjectList& objects, int i) {
+    bool isColliding(ObjectList& objects, size_t i) {
         // placeholder for collision detection with a list of objects
-        for (int j = 0; j < objects.size(); j++) {
+        for (size_t j = 0; j < objects.size(); j++) {
             if (j != i && isColliding(*objects[j])) {
                 return true;
             }
@@ -87,21 +87,21 @@ public:
     virtual Vector getCenter() { return Vector(); }
     virtual float getCenterX() { return 0.0f; }
     virtual float getCenterY() { return 0.0f; }
-    virtual void setCenter(Vector center) {}
-    virtual void setCenterX(float centerX) {}
-    virtual void setCenterY(float centerY) {}
-    virtual void setTopLeft(Vector topLeft) {}
-    virtual void setTopLeftX(float topLeftX) {}
-    virtual void setTopLeftY(float topLeftY) {}
-    virtual void setBottomLeft(Vector bottomRight) {}
-    virtual void setBottomLeftX(float bottomRightX) {}
-    virtual void setBottomLeftY(float bottomRightY) {}
-    virtual void setBottomRight(Vector bottomRight) {}
-    virtual void setBottomRightX(float bottomRightX) {}
-    virtual void setBottomRightY(float bottomRightY) {}
-    virtual void setTopRight(Vector topRight) {}
-    virtual void setTopRightX(float topRightX) {}
-    virtual void setTopRightY(float topRightY) {}
+    virtual void setCenter(Vector) {}
+    virtual void setCenterX(float) {}
+    virtual void setCenterY(float) {}
+    virtual void setTopLeft(Vector) {}
+    virtual void setTopLeftX(float) {}
+    virtual void setTopLeftY(float) {}
+    virtual void setBottomLeft(Vector) {}
+    virtual void setBottomLeftX(float) {}
+    virtual void setBottomLeftY(float) {}
+    virtual void setBottomRight(Vector) {}
+    virtual void setBottomRightX(float) {}
+    virtual void setBottomRightY(float) {}
+    virtual void setTopRight(Vector) {}
+    virtual void setTopRightX(float) {}
+    virtual void setTopRightY(float) {}
 };
 
 class Moveable {

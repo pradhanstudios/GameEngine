@@ -26,9 +26,9 @@ void init() {
   
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
-    for (int i = 0; i < objects.size(); i++) {
+    for (size_t i = 0; i < objects.size(); i++) {
         if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
-            for (int j = 0; j < objects.size(); j++) {
+            for (size_t j = 0; j < objects.size(); j++) {
                 if (i != j && objects[i]->isColliding(*objects[j])) {
                     collision->setCollisionDirection(*objects[i], *objects[j]);
                     std::printf("Collision\n");
@@ -38,7 +38,7 @@ void display() {
         objects[i]->update();
     }
 
-    for (int i = 0; i < objects.size(); i++) {
+    for (size_t i = 0; i < objects.size(); i++) {
         objects[i]->draw();
     }
  

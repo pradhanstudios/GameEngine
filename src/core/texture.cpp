@@ -37,7 +37,6 @@ Texture loadBMPTexture(const char* filename) {
 	// About *( int* ) &, we are converting the value into a char *, and then converting it to int *, and then getting the value
 	texture.width = *( int* ) &(header[0x12]);	
 	texture.height = *( int* ) &(header[0x16]);
-    int bitsPerPixel = *( int* ) &(header[0x1C]);
     int rowSize = (texture.width * 3 + 3) & (~3);
 	unsigned int imageSize = rowSize * texture.height;
 	printf("Width: %u, Height: %u, Image Size: %u\n", texture.width, texture.height, imageSize);
