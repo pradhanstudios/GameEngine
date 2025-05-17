@@ -41,13 +41,15 @@ void display() {
     for (int i = 0; i < objects.size(); i++) {
         objects[i]->draw();
     }
+ 
+    roboto.renderSentence("Hello World", 48, Vector(0, 0), textShader);
 
     glFlush();
     glutPostRedisplay();
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
 } 
-  
+ 
 int main(int argc, char** argv) { 
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_STENCIL | GLUT_DEPTH); 
@@ -58,10 +60,10 @@ int main(int argc, char** argv) {
       
     // Giving name to window 
     glutCreateWindow("Game Engine Core Testing"); 
+    glewInit();
     init(); 
 
     Texture rickroll = loadBMPTexture("assets/rickroll.bmp");
-    Font roboto = Font("assets/Roboto.ttf");
     Texture Char_A = roboto.getCharacter('A');
 
 
