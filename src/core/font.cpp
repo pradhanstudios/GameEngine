@@ -49,3 +49,48 @@ Font::Font(const char* path) {
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 }
+
+void Font::renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader) {
+    if (!shader) {
+        printf("Font::renderSentence(); Please use a shader");
+        return;
+    }
+
+    glUseProgram(shader);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    for (int i = 0; *(sentence + i) != '\0'; i++) {
+        char c = *(sentence + i);
+        Texture texture = getCharacter(c);
+        // printf("Character: %c, Texture id: %u\n", c, texture.textureID);
+
+        Vector characterSize = getCharacterSize(texture, fontSize);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture.textureID);
+    
+        GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
+        glUniform1i(textureLocation, 0);
+
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2f(position.x, position.y);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2f(position.x + characterSize.x, position.y);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2f(position.x + characterSize.x, position.y + characterSize.y);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2f(position.x, position.y + characterSize.y);
+        glEnd();
+
+        position.x += characterSize.x;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+
+}
