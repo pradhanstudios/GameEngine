@@ -1,5 +1,49 @@
 #include "shape.hpp"
 
+void _drawRectangleV(Vector position, Texture texture, Vector size, GLuint shader) {
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    float vertices[] = {
+        position.x, position.y, 0.f, 0.f, // bottom left
+        position.x + size.x, position.y, 1.f, 0.f, // bottom right
+        position.x + size.x, position.y + size.y, 1.f, 1.f, // top right
+        position.x, position.y + size.y, 0.f, 1.f, // top left
+    };
+
+    // upload data
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) 0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glUseProgram(shader);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.textureID);
+
+    GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
+    glUniform1i(textureLocation, 0);
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    GLubyte indices[] = {0, 1, 2, 0, 2, 3};
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArray(0);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDisable(GL_BLEND);
+    glUseProgram(0);
+}
+
 // Define the collision methods after both classes are fully declared
 inline bool Rectangle::isColliding(Object& other) {
     if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
