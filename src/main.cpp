@@ -26,9 +26,9 @@ void init() {
   
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
-    for (int i = 0; i < objects.size(); i++) {
+    for (size_t i = 0; i < objects.size(); i++) {
         if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
-            for (int j = 0; j < objects.size(); j++) {
+            for (size_t j = 0; j < objects.size(); j++) {
                 if (i != j && objects[i]->isColliding(*objects[j])) {
                     collision->setCollisionDirection(*objects[i], *objects[j]);
                     std::printf("Collision\n");
@@ -38,16 +38,18 @@ void display() {
         objects[i]->update();
     }
 
-    for (int i = 0; i < objects.size(); i++) {
+    for (size_t i = 0; i < objects.size(); i++) {
         objects[i]->draw();
     }
+ 
+    roboto->renderSentence("Hello World", 48, Vector(0, 0), textShader, GREEN);
 
     glFlush();
     glutPostRedisplay();
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
 } 
-  
+ 
 int main(int argc, char** argv) { 
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_STENCIL | GLUT_DEPTH); 
@@ -55,10 +57,13 @@ int main(int argc, char** argv) {
     // giving window size in X- and Y- directon 
     glutInitWindowSize(RESOLUTION_WIDTH, RESOLUTION_HEIGHT); 
     glutInitWindowPosition(0, 0); 
-      
-    // Giving name to window 
     glutCreateWindow("Game Engine Core Testing"); 
+
+    glewInit();
     init(); 
+    
+    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/shader.frag");
+    roboto = new Font("assets/Roboto.ttf");
 
     Texture rickroll = loadBMPTexture("assets/rickroll.bmp");
 
@@ -74,6 +79,8 @@ int main(int argc, char** argv) {
      
     glutDisplayFunc(display); 
     glutMainLoop(); 
+
+    delete roboto;
     
     return 0;
 } 

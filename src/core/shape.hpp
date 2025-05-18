@@ -5,6 +5,8 @@
 #include "object.hpp"
 #include "vector.hpp"
 
+void _drawRectangleV(Vector position, Texture texture, Vector size, GLuint shader);
+
 class Rectangle : public Object {
 public:
     Rectangle(int x, int y, int width, int height, Texture* texture=nullptr) :

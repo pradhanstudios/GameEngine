@@ -37,7 +37,6 @@ Texture loadBMPTexture(const char* filename) {
 	// About *( int* ) &, we are converting the value into a char *, and then converting it to int *, and then getting the value
 	texture.width = *( int* ) &(header[0x12]);	
 	texture.height = *( int* ) &(header[0x16]);
-    int bitsPerPixel = *( int* ) &(header[0x1C]);
     int rowSize = (texture.width * 3 + 3) & (~3);
 	unsigned int imageSize = rowSize * texture.height;
 	printf("Width: %u, Height: %u, Image Size: %u\n", texture.width, texture.height, imageSize);
@@ -55,7 +54,6 @@ Texture loadBMPTexture(const char* filename) {
 	glBindTexture(GL_TEXTURE_2D, texture.textureID);
 	// Give the image data to openGL and link it to the Texture ID 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_BGR, GL_UNSIGNED_BYTE, imageData);
-    printf("got here\n");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
