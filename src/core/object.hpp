@@ -60,7 +60,7 @@ public:
         }
     }
 
-    virtual void draw() {
+    virtual void draw(GLuint) {
         // Placeholder for drawing logic
     }
     
