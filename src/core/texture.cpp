@@ -1,18 +1,7 @@
 #include "texture.hpp"
 
 Texture loadBMPTexture(const char* filename) {
-	const GLubyte* renderer = glGetString(GL_RENDERER);
-	const GLubyte* version = glGetString(GL_VERSION);
-
     Texture texture;
-
-	if (!renderer || !version) {
-	    printf("OpenGL context is not active\n");
-	    return texture;
-	}
-
-	printf("Renderer: %s\n", renderer);
-	printf("OpenGL version: %s\n", version);
 	FILE* file = fopen(filename, "rb");
 
 	if (!file) {
