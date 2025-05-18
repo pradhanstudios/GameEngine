@@ -22,15 +22,15 @@ Font::Font(const char* path) {
             continue;
         }
 
-        Texture texture = Texture(0, face->glyph->bitmap.width, face->glyph->bitmap.rows);
-        glGenTextures(1, &texture.textureID);
-        glBindTexture(GL_TEXTURE_2D, texture.textureID);
+        Character character = Character(0, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap_left, face->glyph->bitmap_top, face->glyph->advance.x >> 6);
+        glGenTextures(1, &character.textureID);
+        glBindTexture(GL_TEXTURE_2D, character.textureID);
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
             GL_RED,
-            texture.width,
-            texture.height,
+            character.width,
+            character.height,
             0,
             GL_RED,
             GL_UNSIGNED_BYTE,
@@ -42,7 +42,7 @@ Font::Font(const char* path) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        setCharacter(c, texture);
+        setCharacter(c, character);
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -52,7 +52,7 @@ Font::Font(const char* path) {
 
 void Font::renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader) {
     if (!shader) {
-        printf("Font::renderSentence(); Please use a shader");
+        printf("Font::renderSentence(); Please use a shader\n");
         return;
     }
 
@@ -64,29 +64,35 @@ void Font::renderSentence(const char* sentence, int fontSize, Vector position, G
 
     for (int i = 0; *(sentence + i) != '\0'; i++) {
         char c = *(sentence + i);
-        Texture texture = getCharacter(c);
+        Character character = getCharacter(c);
         // printf("Character: %c, Texture id: %u\n", c, texture.textureID);
 
-        Vector characterSize = getCharacterSize(texture, fontSize);
+        float scale = fontSize / 48.f;
+        Vector characterAdjustedSize = getCharacterSize(character, fontSize);
+        Vector characterAdjustedPosition = Vector(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
+        // printf("Character '%c' width %i height %i BearingX %i BearingY %i\n", c, character.width, character.height, character.bearingX, character.bearingY);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.textureID);
-    
-        GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
-        glUniform1i(textureLocation, 0);
 
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f);
-            glVertex2f(position.x, position.y);
-            glTexCoord2f(1.0f, 0.0f);
-            glVertex2f(position.x + characterSize.x, position.y);
-            glTexCoord2f(1.0f, 1.0f);
-            glVertex2f(position.x + characterSize.x, position.y + characterSize.y);
-            glTexCoord2f(0.0f, 1.0f);
-            glVertex2f(position.x, position.y + characterSize.y);
-        glEnd();
+        _drawRectangleV(characterAdjustedPosition, character, characterAdjustedSize, shader);
 
-        position.x += characterSize.x;
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, texture.textureID);
+        //
+        // GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
+        // glUniform1i(textureLocation, 0);
+        //
+        // glBegin(GL_QUADS);
+        //     glTexCoord2f(0.0f, 0.0f);
+        //     glVertex2f(position.x, position.y);
+        //     glTexCoord2f(1.0f, 0.0f);
+        //     glVertex2f(position.x + characterSize.x, position.y);
+        //     glTexCoord2f(1.0f, 1.0f);
+        //     glVertex2f(position.x + characterSize.x, position.y + characterSize.y);
+        //     glTexCoord2f(0.0f, 1.0f);
+        //     glVertex2f(position.x, position.y + characterSize.y);
+        // glEnd();
+
+        position.x += character.advance * scale;
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
