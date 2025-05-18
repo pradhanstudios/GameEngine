@@ -15,13 +15,16 @@ void init() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       
-    // breadth of picture boundary is 1 pixel 
     glPointSize(1.0); 
     glMatrixMode(GL_PROJECTION);  
     glLoadIdentity(); 
       
-    // setting window dimension in X- and Y- direction 
     gluOrtho2D(0, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0); 
+
+    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
+    imageShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
+
+    roboto = new Font("assets/Roboto.ttf");
 } 
   
 void display() {
@@ -31,7 +34,6 @@ void display() {
             for (size_t j = 0; j < objects.size(); j++) {
                 if (i != j && objects[i]->isColliding(*objects[j])) {
                     collision->setCollisionDirection(*objects[i], *objects[j]);
-                    std::printf("Collision\n");
                 }
             }
         }
@@ -39,10 +41,10 @@ void display() {
     }
 
     for (size_t i = 0; i < objects.size(); i++) {
-        objects[i]->draw(imageShader);
+        objects[i]->draw();
     }
  
-    roboto->renderSentence("Hello World", 48, Vector(0, 0), textShader, GREEN);
+    roboto->renderSentence("Hello World", 48, Vector(0, 0), GREEN);
 
     glFlush();
     glutPostRedisplay();
@@ -61,16 +63,9 @@ int main(int argc, char** argv) {
 
     glewInit();
     init(); 
-    
-    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
-    imageShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
-    printf("Got past image shader\n");
-    roboto = new Font("assets/Roboto.ttf");
 
     Texture* rickroll = new Texture(loadBMPTexture("assets/rickroll.bmp"));
 
-    printf("GLuint for rickroll: %i\n", rickroll->textureID);
-    printf("Address of rickroll: %p\n", rickroll);
     objects.push_back(std::make_unique<MyCircle>(MyCircle(RESOLUTION_WIDTH / 3, 0, 50, rickroll)));
     objects[0]->setCenterY(RESOLUTION_HEIGHT / 2);
     objects.push_back(std::make_unique<Rectangle>(Rectangle(RESOLUTION_WIDTH / 3 * 2, 0, 200, 100, rickroll)));
