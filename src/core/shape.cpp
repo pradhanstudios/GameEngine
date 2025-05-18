@@ -1,6 +1,6 @@
 #include "shape.hpp"
 
-void _drawRectangleV(Vector position, Texture texture, Vector size, GLuint shader) {
+void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shader, Vector3 color) {
     GLuint VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -24,11 +24,26 @@ void _drawRectangleV(Vector position, Texture texture, Vector size, GLuint shade
     glEnableVertexAttribArray(1);
 
     glUseProgram(shader);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.textureID);
 
-    GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
-    glUniform1i(textureLocation, 0);
+    if (texture && texture->textureID) {
+        GLuint useTextureLocation = glGetUniformLocation(shader, "useTexture");
+        glUniform1i(useTextureLocation, 1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture->textureID);
+        GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
+        glUniform1i(textureLocation, 0);
+
+    }
+
+    else {
+        // printf("Got here from _drawRectangleV(); position %f %f\n", position.x, position.y);
+        GLuint colorLocation = glGetUniformLocation(shader, "color");
+        glUniform4f(colorLocation, color.x, color.y, color.z, 1.0);
+
+        GLuint useTextureLocation = glGetUniformLocation(shader, "useTexture");
+        glUniform1i(useTextureLocation, 0);
+    }
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
