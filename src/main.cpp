@@ -42,7 +42,7 @@ void display() {
         objects[i]->draw();
     }
  
-    roboto.renderSentence("Hello World", 48, Vector(0, 0), textShader);
+    roboto->renderSentence("Hello World", 48, Vector(0, 0), textShader);
 
     glFlush();
     glutPostRedisplay();
@@ -57,14 +57,16 @@ int main(int argc, char** argv) {
     // giving window size in X- and Y- directon 
     glutInitWindowSize(RESOLUTION_WIDTH, RESOLUTION_HEIGHT); 
     glutInitWindowPosition(0, 0); 
-      
-    // Giving name to window 
     glutCreateWindow("Game Engine Core Testing"); 
+
     glewInit();
     init(); 
+    
+    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/shader.frag");
+    roboto = new Font("assets/Roboto.ttf");
 
     Texture rickroll = loadBMPTexture("assets/rickroll.bmp");
-    Texture Char_A = roboto.getCharacter('A');
+    Texture Char_A = roboto->getCharacter('A');
 
 
     printf("GLuint for rickroll: %i\n", rickroll.textureID);
@@ -79,6 +81,8 @@ int main(int argc, char** argv) {
      
     glutDisplayFunc(display); 
     glutMainLoop(); 
+
+    delete roboto;
     
     return 0;
 } 
