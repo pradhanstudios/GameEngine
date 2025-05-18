@@ -1,5 +1,7 @@
 #include "shaders.hpp"
 
+GLuint textShader = 0;
+
 char* readFile(const char* filename) {
     char* content;
     long fsize = 0;
