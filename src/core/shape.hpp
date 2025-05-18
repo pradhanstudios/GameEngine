@@ -2,6 +2,7 @@
 #define SHAPE_HPP
 
 #include "constants.hpp"
+#include "shaders.hpp"
 #include "object.hpp"
 #include "vector.hpp"
 
@@ -22,8 +23,8 @@ public:
 
     bool isColliding(Object& other) override;
 
-    void draw(GLuint shader) override {
-        _drawRectangleV(Vector(position.x, position.y), texture, Vector(width, height), shader);
+    void draw() override {
+        _drawRectangleV(Vector(position.x, position.y), texture, Vector(width, height), imageShader);
     }
 
     virtual void update() override {
@@ -175,7 +176,7 @@ public:
 
     bool isColliding(Object& other) override;
 
-    void draw(GLuint shader) override {
+    void draw() override {
         glClear(GL_STENCIL_BUFFER_BIT);
         glEnable(GL_STENCIL_TEST);
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -194,21 +195,9 @@ public:
         glStencilFunc(GL_EQUAL, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-        // initDraw();
-        // glBegin(GL_QUADS);
-        //     glTexCoord2f(0.0f, 0.0f);
-        //     glVertex2f(position.x - radius, position.y - radius);
-        //     glTexCoord2f(1.0f, 0.0f);
-        //     glVertex2f(position.x + radius, position.y - radius);
-        //     glTexCoord2f(1.0f, 1.0f);
-        //     glVertex2f(position.x + radius, position.y + radius);
-        //     glTexCoord2f(0.0f, 1.0f);
-        //     glVertex2f(position.x - radius, position.y + radius);
-        // glEnd();
-        _drawRectangleV(position - Vector(radius, radius), texture, Vector(radius*2, radius*2), shader);
+        _drawRectangleV(position - Vector(radius, radius), texture, Vector(radius*2, radius*2), imageShader);
 
         glDisable(GL_STENCIL_TEST);
-        // unInitDraw();
     }
 
     virtual void update() override {

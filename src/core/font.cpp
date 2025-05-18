@@ -50,16 +50,11 @@ Font::Font(const char* path) {
     FT_Done_FreeType(ft);
 }
 
-void Font::renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader, Vector3 color) {
-    if (!shader) {
-        printf("Font::renderSentence(); Please use a shader\n");
-        return;
-    }
-
-    glUseProgram(shader);
+void Font::renderSentence(const char* sentence, int fontSize, Vector position, Vector3 color) {
+    glUseProgram(textShader);
 
     // set color
-    GLuint colorLocation = glGetUniformLocation(shader, "textColor");
+    GLuint colorLocation = glGetUniformLocation(textShader, "textColor");
     glUniform3f(colorLocation, color.x, color.y, color.z);
 
     glEnable(GL_TEXTURE_2D);
@@ -76,7 +71,7 @@ void Font::renderSentence(const char* sentence, int fontSize, Vector position, G
         Vector characterAdjustedPosition = Vector(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
         // printf("Character '%c' width %i height %i BearingX %i BearingY %i\n", c, character.width, character.height, character.bearingX, character.bearingY);
 
-        _drawRectangleV(characterAdjustedPosition, static_cast<Texture*>(&character), characterAdjustedSize, shader);
+        _drawRectangleV(characterAdjustedPosition, static_cast<Texture*>(&character), characterAdjustedSize, textShader);
         position.x += character.advance * scale;
     }
 
