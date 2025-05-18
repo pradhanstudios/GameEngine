@@ -76,31 +76,12 @@ void Font::renderSentence(const char* sentence, int fontSize, Vector position, G
         Vector characterAdjustedPosition = Vector(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
         // printf("Character '%c' width %i height %i BearingX %i BearingY %i\n", c, character.width, character.height, character.bearingX, character.bearingY);
 
-
-        _drawRectangleV(characterAdjustedPosition, character, characterAdjustedSize, shader);
-
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, texture.textureID);
-        //
-        // GLuint textureLocation = glGetUniformLocation(shader, "aTexture");
-        // glUniform1i(textureLocation, 0);
-        //
-        // glBegin(GL_QUADS);
-        //     glTexCoord2f(0.0f, 0.0f);
-        //     glVertex2f(position.x, position.y);
-        //     glTexCoord2f(1.0f, 0.0f);
-        //     glVertex2f(position.x + characterSize.x, position.y);
-        //     glTexCoord2f(1.0f, 1.0f);
-        //     glVertex2f(position.x + characterSize.x, position.y + characterSize.y);
-        //     glTexCoord2f(0.0f, 1.0f);
-        //     glVertex2f(position.x, position.y + characterSize.y);
-        // glEnd();
-
+        _drawRectangleV(characterAdjustedPosition, static_cast<Texture*>(&character), characterAdjustedSize, shader);
         position.x += character.advance * scale;
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
-
+    glUseProgram(0);
 }
