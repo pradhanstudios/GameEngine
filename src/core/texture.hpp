@@ -3,7 +3,8 @@
 
 #include "constants.hpp"
 
-struct Texture {
+class Texture {
+public:
     GLuint textureID;
     int width, height;
 
