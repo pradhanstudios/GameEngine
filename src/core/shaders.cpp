@@ -1,20 +1,32 @@
 #include "shaders.hpp"
 
 GLuint textShader = 0;
+GLuint imageShader = 0;
 
 char* readFile(const char* filename) {
     char* content;
-    long fsize = 0;
     FILE *file = fopen(filename, "r");
-    if (file) {
-        fseek(file, 0, SEEK_END);
-        fsize = ftell(file);
-        rewind(file);
-
-        content = ( char* ) malloc(fsize * sizeof(char));
-        fread(content, 1, fsize, file);
-        fclose(file);
+    if (!file) {
+        printf("Failed to open file '%s'\n", filename);
+        return "Fail";
     }
+
+    fseek(file, 0, SEEK_END);
+    long fsize = ftell(file);
+    rewind(file);
+
+    content = ( char* ) (malloc(fsize + 1 * sizeof(char)));
+    if (!content) {
+        printf("Failed to allocate memory for file '%s'\n", filename); 
+        return "Fail";
+    }
+
+    size_t bytesRead = fread(content, 1, fsize, file);
+    fclose(file);
+
+    content[bytesRead] = '\0';
+
+    // printf("filename %s:\n%s\n\n", filename, content);
 
     return content;
 }
