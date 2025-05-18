@@ -9,6 +9,7 @@
 #include <math.h>
 #include <vector>
 #include <memory>
+#include <cstring>
  
 // Resolution / Quality
 #define RESOLUTION_WIDTH 1280
