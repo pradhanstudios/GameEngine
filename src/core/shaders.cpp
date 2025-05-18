@@ -8,7 +8,7 @@ char* readFile(const char* filename) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         printf("Failed to open file '%s'\n", filename);
-        return "Fail";
+        return nullptr;
     }
 
     fseek(file, 0, SEEK_END);
@@ -18,7 +18,7 @@ char* readFile(const char* filename) {
     content = ( char* ) (malloc(fsize + 1 * sizeof(char)));
     if (!content) {
         printf("Failed to allocate memory for file '%s'\n", filename); 
-        return "Fail";
+        return nullptr;
     }
 
     size_t bytesRead = fread(content, 1, fsize, file);
