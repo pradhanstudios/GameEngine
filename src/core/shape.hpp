@@ -23,18 +23,6 @@ public:
     bool isColliding(Object& other) override;
 
     void draw(GLuint shader) override {
-        // initDraw();
-        // glBegin(GL_QUADS);
-        //     glTexCoord2f(0.0f, 0.0f);
-        //     glVertex2f(position.x, position.y);
-        //     glTexCoord2f(1.0f, 0.0f);
-        //     glVertex2f(position.x + width, position.y);
-        //     glTexCoord2f(1.0f, 1.0f);
-        //     glVertex2f(position.x + width, position.y + height);
-        //     glTexCoord2f(0.0f, 1.0f);
-        //     glVertex2f(position.x, position.y + height);
-        // glEnd();
-        // unInitDraw();
         _drawRectangleV(Vector(position.x, position.y), texture, Vector(width, height), shader);
     }
 
@@ -206,20 +194,21 @@ public:
         glStencilFunc(GL_EQUAL, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-        initDraw();
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f);
-            glVertex2f(position.x - radius, position.y - radius);
-            glTexCoord2f(1.0f, 0.0f);
-            glVertex2f(position.x + radius, position.y - radius);
-            glTexCoord2f(1.0f, 1.0f);
-            glVertex2f(position.x + radius, position.y + radius);
-            glTexCoord2f(0.0f, 1.0f);
-            glVertex2f(position.x - radius, position.y + radius);
-        glEnd();
+        // initDraw();
+        // glBegin(GL_QUADS);
+        //     glTexCoord2f(0.0f, 0.0f);
+        //     glVertex2f(position.x - radius, position.y - radius);
+        //     glTexCoord2f(1.0f, 0.0f);
+        //     glVertex2f(position.x + radius, position.y - radius);
+        //     glTexCoord2f(1.0f, 1.0f);
+        //     glVertex2f(position.x + radius, position.y + radius);
+        //     glTexCoord2f(0.0f, 1.0f);
+        //     glVertex2f(position.x - radius, position.y + radius);
+        // glEnd();
+        _drawRectangleV(position - Vector(radius, radius), texture, Vector(radius*2, radius*2), shader);
 
         glDisable(GL_STENCIL_TEST);
-        unInitDraw();
+        // unInitDraw();
     }
 
     virtual void update() override {
