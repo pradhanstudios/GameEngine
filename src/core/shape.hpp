@@ -5,7 +5,7 @@
 #include "object.hpp"
 #include "vector.hpp"
 
-void _drawRectangleV(Vector position, Texture texture, Vector size, GLuint shader);
+void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shader, Vector3 color=WHITE);
 
 class Rectangle : public Object {
 public:
@@ -22,19 +22,20 @@ public:
 
     bool isColliding(Object& other) override;
 
-    void draw() override {
-        initDraw();
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f);
-            glVertex2f(position.x, position.y);
-            glTexCoord2f(1.0f, 0.0f);
-            glVertex2f(position.x + width, position.y);
-            glTexCoord2f(1.0f, 1.0f);
-            glVertex2f(position.x + width, position.y + height);
-            glTexCoord2f(0.0f, 1.0f);
-            glVertex2f(position.x, position.y + height);
-        glEnd();
-        unInitDraw();
+    void draw(GLuint shader) override {
+        // initDraw();
+        // glBegin(GL_QUADS);
+        //     glTexCoord2f(0.0f, 0.0f);
+        //     glVertex2f(position.x, position.y);
+        //     glTexCoord2f(1.0f, 0.0f);
+        //     glVertex2f(position.x + width, position.y);
+        //     glTexCoord2f(1.0f, 1.0f);
+        //     glVertex2f(position.x + width, position.y + height);
+        //     glTexCoord2f(0.0f, 1.0f);
+        //     glVertex2f(position.x, position.y + height);
+        // glEnd();
+        // unInitDraw();
+        _drawRectangleV(Vector(position.x, position.y), texture, Vector(width, height), shader);
     }
 
     virtual void update() override {
@@ -186,7 +187,7 @@ public:
 
     bool isColliding(Object& other) override;
 
-    void draw() override {
+    void draw(GLuint shader) override {
         glClear(GL_STENCIL_BUFFER_BIT);
         glEnable(GL_STENCIL_TEST);
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
