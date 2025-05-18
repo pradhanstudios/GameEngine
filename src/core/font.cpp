@@ -50,13 +50,17 @@ Font::Font(const char* path) {
     FT_Done_FreeType(ft);
 }
 
-void Font::renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader) {
+void Font::renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader, Vector3 color) {
     if (!shader) {
         printf("Font::renderSentence(); Please use a shader\n");
         return;
     }
 
     glUseProgram(shader);
+
+    // set color
+    GLuint colorLocation = glGetUniformLocation(shader, "textColor");
+    glUniform3f(colorLocation, color.x, color.y, color.z);
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);

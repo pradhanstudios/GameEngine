@@ -18,7 +18,7 @@ private:
     Character characters[95];
 public:
     Font(const char* path);
-    void renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader);
+    void renderSentence(const char* sentence, int fontSize, Vector position, GLuint shader, Vector3 color=WHITE);
 
     inline Vector getCharacterSize(Character character, int fontSize=48) {
         float scale = fontSize / 48.f;
