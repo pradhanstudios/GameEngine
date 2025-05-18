@@ -39,7 +39,7 @@ void display() {
     }
 
     for (size_t i = 0; i < objects.size(); i++) {
-        objects[i]->draw();
+        objects[i]->draw(imageShader);
     }
  
     roboto->renderSentence("Hello World", 48, Vector(0, 0), textShader, GREEN);
@@ -62,16 +62,18 @@ int main(int argc, char** argv) {
     glewInit();
     init(); 
     
-    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/shader.frag");
+    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
+    imageShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
+    printf("Got past image shader\n");
     roboto = new Font("assets/Roboto.ttf");
 
-    Texture rickroll = loadBMPTexture("assets/rickroll.bmp");
+    Texture* rickroll = new Texture(loadBMPTexture("assets/rickroll.bmp"));
 
-    printf("GLuint for rickroll: %i\n", rickroll.textureID);
-    printf("Address of rickroll: %p\n", &rickroll);
-    objects.push_back(std::make_unique<MyCircle>(MyCircle(RESOLUTION_WIDTH / 3, 0, 50, &rickroll)));
+    printf("GLuint for rickroll: %i\n", rickroll->textureID);
+    printf("Address of rickroll: %p\n", rickroll);
+    objects.push_back(std::make_unique<MyCircle>(MyCircle(RESOLUTION_WIDTH / 3, 0, 50, rickroll)));
     objects[0]->setCenterY(RESOLUTION_HEIGHT / 2);
-    objects.push_back(std::make_unique<Rectangle>(Rectangle(RESOLUTION_WIDTH / 3 * 2, 0, 200, 100, &rickroll)));
+    objects.push_back(std::make_unique<Rectangle>(Rectangle(RESOLUTION_WIDTH / 3 * 2, 0, 200, 100, rickroll)));
     objects[1]->setCenterY(RESOLUTION_HEIGHT / 2);
     objects.push_back(std::make_unique<Rectangle>(Rectangle(0, RESOLUTION_HEIGHT - 50, RESOLUTION_WIDTH, 50)));
     objects[2]->setCenterX(RESOLUTION_WIDTH / 2);
@@ -81,6 +83,7 @@ int main(int argc, char** argv) {
     glutMainLoop(); 
 
     delete roboto;
+    delete rickroll;
     
     return 0;
 } 
