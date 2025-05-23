@@ -49,5 +49,7 @@ inline float friction = -0.12f;
 #define PURPLE Vector3(0.5f, 0.f, 1.f)
 #define PINK Vector3(1.f, 0.5f, 0.5f)
 #define BROWN Vector3(0.5f, 0.25f, 0.f)
+#define USE_COLOR 1
+#define NO_USE_COLOR 0
 
 #endif // CONSTANTS_HPP
