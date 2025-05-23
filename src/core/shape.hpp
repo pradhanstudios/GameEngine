@@ -6,7 +6,8 @@
 #include "object.hpp"
 #include "vector.hpp"
 
-void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shader, Vector3 color=WHITE);
+void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR);
+void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR);
 
 class Rectangle : public Object {
 public:
@@ -23,8 +24,8 @@ public:
 
     bool isColliding(Object& other) override;
 
-    void draw() override {
-        _drawRectangleV(Vector(position.x, position.y), texture, Vector(width, height), imageShader);
+    virtual void draw() override {
+        drawRectangleManual(position, texture, width, height, imageShader);
     }
 
     virtual void update() override {
@@ -175,29 +176,9 @@ public:
     }
 
     bool isColliding(Object& other) override;
-
-    void draw() override {
-        glClear(GL_STENCIL_BUFFER_BIT);
-        glEnable(GL_STENCIL_TEST);
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        
-        glBegin(GL_TRIANGLE_FAN);
-             glVertex2f(position.x, position.y);
-             for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
-                 float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
-                 glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
-             }
-        glEnd();
-
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-        glStencilFunc(GL_EQUAL, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-        _drawRectangleV(position - Vector(radius, radius), texture, Vector(radius*2, radius*2), imageShader);
-
-        glDisable(GL_STENCIL_TEST);
+ 
+    virtual void draw() override {
+        drawCircleManual(position, texture, radius, imageShader);
     }
 
     virtual void update() override {
