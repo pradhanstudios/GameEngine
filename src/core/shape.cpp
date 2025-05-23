@@ -1,6 +1,6 @@
 #include "shape.hpp"
 
-void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shader, Vector3 color) {
+void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color, bool use_color) {
     GLuint VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -9,9 +9,9 @@ void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shad
 
     float vertices[] = {
         position.x, position.y, 0.f, 0.f, // bottom left
-        position.x + size.x, position.y, 1.f, 0.f, // bottom right
-        position.x + size.x, position.y + size.y, 1.f, 1.f, // top right
-        position.x, position.y + size.y, 0.f, 1.f, // top left
+        position.x + width, position.y, 1.f, 0.f, // bottom right
+        position.x + width, position.y + height, 1.f, 1.f, // top right
+        position.x, position.y + height, 0.f, 1.f, // top left
     };
 
     // upload data
@@ -25,7 +25,7 @@ void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shad
 
     glUseProgram(shader);
 
-    if (texture && texture->textureID) {
+    if (!use_color && texture && texture->textureID) {
         GLuint useTextureLocation = glGetUniformLocation(shader, "useTexture");
         glUniform1i(useTextureLocation, 1);
 
@@ -58,6 +58,31 @@ void _drawRectangleV(Vector position, Texture* texture, Vector size, GLuint shad
     glDisable(GL_BLEND);
     glUseProgram(0);
 }
+
+void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shader, Vector3 color, bool use_color) {
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glEnable(GL_STENCIL_TEST);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        
+        glBegin(GL_TRIANGLE_FAN);
+             glVertex2f(position.x, position.y);
+             for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
+                 float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
+                 glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
+             }
+        glEnd();
+
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glStencilFunc(GL_EQUAL, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+ 
+        drawRectangleManual(Vector(position.x - radius, position.y - radius), texture, radius * 2, radius * 2, shader, color, use_color);
+
+        glDisable(GL_STENCIL_TEST);
+    }
+
 
 // Define the collision methods after both classes are fully declared
 inline bool Rectangle::isColliding(Object& other) {
