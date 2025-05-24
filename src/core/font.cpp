@@ -71,7 +71,7 @@ void Font::renderSentence(const char* sentence, int fontSize, Vector position, V
         Vector characterAdjustedPosition = Vector(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
         // printf("Character '%c' width %i height %i BearingX %i BearingY %i\n", c, character.width, character.height, character.bearingX, character.bearingY);
 
-        _drawRectangleV(characterAdjustedPosition, static_cast<Texture*>(&character), characterAdjustedSize, textShader);
+        drawRectangleManual(characterAdjustedPosition, static_cast<Texture*>(&character), characterAdjustedSize.x, characterAdjustedSize.y, textShader);
         position.x += character.advance * scale;
     }
 

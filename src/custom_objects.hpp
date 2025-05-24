@@ -20,5 +20,17 @@ public:
     }
 };
 
+class MyRectangle : public Rectangle {
+public:
+    Vector3 color;
+    
+    MyRectangle(int x, int y, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, texture), color(color) {}
+    MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture), color(color) {}
+
+    void draw() override {
+        drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR);
+    }
+
+};
 
 #endif // CUSTOM_OBJECTS_HPP
