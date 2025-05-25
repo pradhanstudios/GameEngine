@@ -35,6 +35,7 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 
     // DRAW
     glBindVertexArray(VAO);
+
     if (useElements) {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
@@ -42,6 +43,7 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
     else {
         glDrawArrays(primitiveType, 0, vertexCount);
     }
+
     // CLEANUP
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
@@ -103,19 +105,56 @@ void drawRectangleManual(Vector position, Texture* texture, int width, int heigh
 }
 
 void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shader, Vector3 color, bool useColor) {
-    glClear(GL_STENCIL_BUFFER_BIT);
+    // SETUP VERTICES
+    // (x, y, dummy u, dummy v)
+    float vertices[(TRIANGLE_COUNT_CIRCLE + 2) * 4];
+    int vertexIDX = 0;
+    // Start at (0, 0) and work from there
+    vertices[vertexIDX++] = 0.f; // x 
+    vertices[vertexIDX++] = 0.f; // y 
+    vertices[vertexIDX++] = 0.f; // dummy u 
+    vertices[vertexIDX++] = 0.f; // dummy v 
+
+    for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
+        float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
+        vertices[vertexIDX++] = radius * cos(angle); // x 
+        vertices[vertexIDX++] = radius * sin(angle); // y 
+        vertices[vertexIDX++] = 0.f; // dummy u 
+        vertices[vertexIDX++] = 0.f; // dummy v 
+    }    
+    // ACTUAL SETUP (do at initialization of shape)
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Position attribute (layout location 0 in shader)
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // Texture coordinate attribute (layout location 1 in shader - even if dummy for stencil)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0); // Unbind VAO
+    glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind VBO
+    
+    // STENCIL
     glEnable(GL_STENCIL_TEST);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     
-    glBegin(GL_TRIANGLE_FAN);
-         glVertex2f(position.x, position.y);
-         for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
-             float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
-             glVertex2f(position.x + radius * cos(angle), position.y + radius * sin(angle));
-         }
-    glEnd();
+    // make a model for the stencil
+    glm::mat4 model(1.f);
+    model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
+
+    glm::mat4 projection = glm::ortho(0.f, float(RESOLUTION_WIDTH), float(RESOLUTION_HEIGHT), 0.f, -1.f, 1.f);
+    glm::mat4 view(1.f);
+
+    _drawShape(model, view, projection, VAO, (TRIANGLE_COUNT_CIRCLE + 2), shader, GL_TRIANGLE_FAN, GL_TEXTURE0, false, (texture ? texture->textureID : 0), color, useColor); 
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glStencilFunc(GL_EQUAL, 1, 0xFF);
@@ -124,6 +163,8 @@ void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shad
     drawRectangleManual(Vector(position.x - radius, position.y - radius), texture, radius * 2, radius * 2, shader, color, useColor);
 
     glDisable(GL_STENCIL_TEST);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }
 
 
