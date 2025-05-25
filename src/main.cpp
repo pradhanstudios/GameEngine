@@ -21,7 +21,7 @@ void init() {
 
     roboto = new Font("assets/Roboto.ttf");
 } 
-  
+ 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
     for (size_t i = 0; i < objects.size(); i++) {
@@ -43,6 +43,7 @@ void display() {
 
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
+    glutPostRedisplay();
 } 
  
 int main(int argc, char** argv) { 
