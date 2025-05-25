@@ -8,7 +8,11 @@ sudo apt install freeglut3-dev
 ```
 #### GLEW
 ```bash
-sudo apt-get install libglew-dev
+sudo apt install libglew-dev
+```
+#### GLM
+```bash
+sudo apt install libglm-dev 
 ```
 
 ### FreeType
