@@ -6,7 +6,7 @@
 #include "object.hpp"
 #include "vector.hpp"
 
-void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR);
+void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR, float rotationAngleRad=0.f);
 void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR);
 
 class Rectangle : public Object {
