@@ -104,7 +104,7 @@ void drawRectangleManual(Vector position, Texture* texture, int width, int heigh
     glDeleteBuffers(1, &EBO);
 }
 
-void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shader, Vector3 color, bool useColor) {
+void drawCircleManual(Vector position, Texture* texture, int radius, float rotation, GLuint shader, Vector3 color, bool useColor) {
     // SETUP VERTICES
     // (x, y, dummy u, dummy v)
     float vertices[(TRIANGLE_COUNT_CIRCLE + 2) * 4];
@@ -160,7 +160,7 @@ void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shad
     glStencilFunc(GL_EQUAL, 1, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-    drawRectangleManual(Vector(position.x - radius, position.y - radius), texture, radius * 2, radius * 2, shader, color, useColor);
+    drawRectangleManual(Vector(position.x - radius, position.y - radius), texture, radius * 2, radius * 2, shader, color, useColor, rotation);
 
     glDisable(GL_STENCIL_TEST);
     glDeleteVertexArrays(1, &VAO);
