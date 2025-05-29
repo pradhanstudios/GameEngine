@@ -12,16 +12,19 @@ public:
     int width;
     int height;
     Texture* texture;
-    Object(int x, int y, int width, int height, Texture* texture=nullptr) :
+    float rotation;
+    Object(int x, int y, int width, int height, Texture* texture=nullptr, float rotation=0.f) :
         position(x, y),
         width(width),
         height(height),
-	texture(texture) {}
-    Object(Vector position, int width, int height, Texture* texture=nullptr) :
+	    texture(texture),
+        rotation(rotation) {}
+    Object(Vector position, int width, int height, Texture* texture=nullptr, float rotation=0.f) :
         position(position),
         width(width),
         height(height),
-	    texture(texture) {}
+	    texture(texture),
+        rotation(rotation) {}
     
     virtual bool isInside(Vector) {
         // Placeholder for inside check logic
