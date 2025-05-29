@@ -9,6 +9,10 @@ public:
     MyCircle(Vector position, float radius, Texture* texture=nullptr) :
         Circle(position, radius, texture) {}
 
+    void draw() override {
+        drawCircleManual(position, texture, radius, DEG2RAD(90.f), imageShader);
+    }
+
     void update() override {
         updateGravity();
         applyCollisions(velocity, acceleration);
