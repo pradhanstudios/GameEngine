@@ -6,6 +6,9 @@
 #include <stdio.h> 
 #include <GL/glew.h>
 #include <GL/glut.h> 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <math.h>
 #include <vector>
 #include <memory>
@@ -21,6 +24,7 @@ inline int fps = 60;
 #define pi 3.142857 
 #define tau 6.283185
 #define epsilon 0.0001f
+#define DEG2RAD(x) (x * (pi/180))
 
 // Type aliases
 #define ObjectList std::vector<std::unique_ptr<Object>>

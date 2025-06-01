@@ -1,8 +1,16 @@
+COMPILER = g++
+WARNING_OPTIONS = -Wextra -Wall -Werror
+SOURCE = src/*.cpp src/core/*.cpp
+INCLUDE = -I/usr/include/freetype2 -I/usr/include/glm
+LIBS = -lGL -lGLEW -lGLU -lglut -lm -lfreetype
+TARGET = GameEngine
+
+
 default:
-	g++ -o GameEngine src/core/*.cpp src/main.cpp -lGL -lGLEW -lGLU -lglut -lm -I /usr/include/freetype2 -lfreetype
+	$(COMPILER) -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS)
 
 warnings:
-	g++ -o GameEngine src/core/*.cpp src/main.cpp -lGL -lGLEW -lGLU -lglut -lm -I /usr/include/freetype2 -lfreetype -Wextra -Wall -Werror
+	$(COMPILER) -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS) $(WARNING_OPTIONS)
 
 debug:
-	g++ -g -o GameEngine src/core/*.cpp src/main.cpp -lGL -lGLEW -lGLU -lglut -lm -I /usr/include/freetype2 -lfreetype
+	$(COMPILER) -g -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS) $(WARNING_OPTIONS)	

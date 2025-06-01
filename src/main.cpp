@@ -11,22 +11,17 @@ void init() {
     // making picture color white 
     glColor3f(1.0, 1.0, 1.0);
     
-    glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       
     glPointSize(1.0); 
-    glMatrixMode(GL_PROJECTION);  
-    glLoadIdentity(); 
-      
-    gluOrtho2D(0, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0); 
 
     textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
     imageShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
 
     roboto = new Font("assets/Roboto.ttf");
 } 
-  
+ 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
     for (size_t i = 0; i < objects.size(); i++) {
@@ -46,10 +41,9 @@ void display() {
  
     roboto->renderSentence("Hello World", 48, Vector(0, 0), GREEN);
 
-    glFlush();
-    glutPostRedisplay();
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
+    glutPostRedisplay();
 } 
  
 int main(int argc, char** argv) { 
@@ -70,7 +64,7 @@ int main(int argc, char** argv) {
     objects[0]->setCenterY(RESOLUTION_HEIGHT / 2);
     objects.push_back(std::make_unique<Rectangle>(Rectangle(RESOLUTION_WIDTH / 3 * 2, 0, 200, 100, rickroll)));
     objects[1]->setCenterY(RESOLUTION_HEIGHT / 2);
-    objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, RESOLUTION_HEIGHT - 50, RESOLUTION_WIDTH, 50, GREEN)));
+    objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, RESOLUTION_HEIGHT - 50, RESOLUTION_WIDTH, 50, RED)));
     objects[2]->setCenterX(RESOLUTION_WIDTH / 2);
     objects[2]->setCenterY(RESOLUTION_HEIGHT - 200);
      

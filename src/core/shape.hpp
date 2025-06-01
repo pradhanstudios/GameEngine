@@ -6,16 +6,17 @@
 #include "object.hpp"
 #include "vector.hpp"
 
-void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR);
-void drawCircleManual(Vector position, Texture* texture, int radius, GLuint shader, Vector3 color=WHITE, bool use_color=NO_USE_COLOR);
+void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, GLuint VAO, GLsizei vertexCount, GLuint shader, GLenum primitiveType, GLenum textureUnit, bool useElements, GLuint textureID, Vector3 color, bool useColor);
+void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool useColor=NO_USE_COLOR, float rotationAngleRad=0.f);
+void drawCircleManual(Vector position, Texture* texture, int radius, float rotation, GLuint shader, Vector3 color=WHITE, bool useColor=NO_USE_COLOR);
 
 class Rectangle : public Object {
 public:
-    Rectangle(int x, int y, int width, int height, Texture* texture=nullptr) :
-        Object(x, y, width, height, texture) {}
+    Rectangle(int x, int y, int width, int height, Texture* texture=nullptr, float rotation=0.f) :
+        Object(x, y, width, height, texture, rotation) {}
 
-    Rectangle(Vector position, int width, int height, Texture* texture=nullptr) :
-        Object(position, width, height, texture) {}
+    Rectangle(Vector position, int width, int height, Texture* texture=nullptr, float rotation=0.f) :
+        Object(position, width, height, texture, rotation) {}
 
     bool isInside(Vector point) override {
         return (point.x >= position.x && point.x <= position.x + width &&
@@ -165,11 +166,11 @@ public:
 class Circle : public Object {
 public:
     float radius;
-    Circle(int x, int y, float radius, Texture* texture=nullptr) :
-        Object(x, y, radius * 2, radius * 2, texture), radius(radius) {}
+    Circle(int x, int y, float radius, Texture* texture=nullptr, float rotation=0.f) :
+        Object(x, y, radius * 2, radius * 2, texture, rotation), radius(radius) {}
 
-    Circle(Vector position, float radius, Texture* texture=nullptr) :
-        Object(position, radius * 2, radius * 2, texture), radius(radius) {}
+    Circle(Vector position, float radius, Texture* texture=nullptr, float rotation=0.f) :
+        Object(position, radius * 2, radius * 2, texture, rotation), radius(radius) {}
 
     bool isInside(Vector point) override {
         return position.distanceTo(point) <= radius;
@@ -178,7 +179,7 @@ public:
     bool isColliding(Object& other) override;
  
     virtual void draw() override {
-        drawCircleManual(position, texture, radius, imageShader);
+        drawCircleManual(position, texture, radius, rotation, imageShader);
     }
 
     virtual void update() override {
