@@ -168,6 +168,44 @@ void drawCircleManual(Vector position, Texture* texture, int radius, float rotat
 }
 
 
+// bool Rectangle::isCollidingWith(Rectangle& other) {
+//
+// }
+
+bool Rectangle::isCollidingWith(Circle* other) {
+    float halfWidth = width * 0.5f;
+    float halfHeight = height * 0.5f;
+    glm::vec2 circleCenterWorld = glm::vec2(other->position.x, other->position.y);
+    glm::vec2 rectCenterWorld = glm::vec2(position.x + halfWidth, position.y + halfHeight);
+
+    // Create an inverse transform
+    glm::mat4 inverseTransform = glm::mat4(1.f);
+    inverseTransform = glm::rotate(inverseTransform, -rotation, glm::vec3(0.f, 0.f, 1.f));
+    inverseTransform = glm::translate(inverseTransform, glm::vec3(-rectCenterWorld.x, -rectCenterWorld.y, 0.f));
+
+    // Make circle positions a vec4 to make matrix multiplication work
+    glm::vec4 circleCenterLocalvec4 = inverseTransform * glm::vec4(circleCenterWorld.x, circleCenterWorld.y, 0.f, 1.f);
+    // Convert back to vec2
+    glm::vec2 circleCenterLocal = glm::vec2(circleCenterLocalvec4.x, circleCenterLocalvec4.y);
+    // find the closes point to the circle centered on (0, 0)
+    glm::vec2 closestPointLocal = glm::vec2(
+        std::max(-halfWidth, std::min(circleCenterLocal.x, halfWidth)),
+        std::max(-halfHeight, std::min(circleCenterLocal.y, halfHeight))
+    );
+
+    // Transform that back to normal coordinates
+    glm::mat4 rectWorldTransform = glm::mat4(1.0f);
+    rectWorldTransform = glm::translate(rectWorldTransform, glm::vec3(rectCenterWorld.x, rectCenterWorld.y, 0.0f));
+    rectWorldTransform = glm::rotate(rectWorldTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    // Same process again
+    glm::vec4 closestPointWorld4 = rectWorldTransform * glm::vec4(closestPointLocal.x, closestPointLocal.y, 0.0f, 1.0f);
+    glm::vec2 closestPointWorld = glm::vec2(closestPointWorld4.x, closestPointWorld4.y);
+
+    // Find the distance and see if it is more than the radius of the circle
+    return glm::distance(circleCenterWorld, closestPointWorld) <=other->radius;
+}
+
 // Define the collision methods after both classes are fully declared
 inline bool Rectangle::isColliding(Object& other) {
     if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
@@ -175,23 +213,33 @@ inline bool Rectangle::isColliding(Object& other) {
                  position.x + width < rect->position.x ||
                  position.y > rect->position.y + rect->height ||
                  position.y + height < rect->position.y);
-    } else if (Circle* circle = dynamic_cast<Circle*>(&other)) {
-        float closestX = std::max(position.x, std::min(circle->position.x, position.x + width));
-        float closestY = std::max(position.y, std::min(circle->position.y, position.y + height));
-        return circle->position.distanceTo(Vector(closestX, closestY)) <= circle->radius;
+    } 
+
+    else if (Circle* circle = dynamic_cast<Circle*>(&other)) {
+        // float closestX = std::max(position.x, std::min(circle->position.x, position.x + width));
+        // float closestY = std::max(position.y, std::min(circle->position.y, position.y + height));
+        // return circle->position.distanceTo(Vector(closestX, closestY)) <= circle->radius;
+        return isCollidingWith(circle);
     }
 
     return false;
 }
 
+bool Circle::isCollidingWith(Circle* other) {
+    float distance = position.distanceTo(other->position);
+    return distance <= (radius + other->radius);
+}
+
 inline bool Circle::isColliding(Object& other) {
     if (Circle* circle = dynamic_cast<Circle*>(&other)) {
-        float distance = position.distanceTo(circle->position);
-        return distance <= (radius + circle->radius);
-    } else if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
-        float closestX = std::max(rect->position.x, std::min(position.x, rect->position.x + rect->width));
-        float closestY = std::max(rect->position.y, std::min(position.y, rect->position.y + rect->height));
-        return position.distanceTo(Vector(closestX, closestY)) <= radius;
+        return isCollidingWith(circle);
+    } 
+
+    else if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
+        // float closestX = std::max(rect->position.x, std::min(position.x, rect->position.x + rect->width));
+        // float closestY = std::max(rect->position.y, std::min(position.y, rect->position.y + rect->height));
+        // return position.distanceTo(Vector(closestX, closestY)) <= radius;
+        return rect->isCollidingWith(this);
     }
 
     return false;

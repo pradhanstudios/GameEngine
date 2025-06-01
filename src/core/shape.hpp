@@ -10,6 +10,160 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool useColor=NO_USE_COLOR, float rotationAngleRad=0.f);
 void drawCircleManual(Vector position, Texture* texture, int radius, float rotation, GLuint shader, Vector3 color=WHITE, bool useColor=NO_USE_COLOR);
 
+class Circle : public Object {
+public:
+    float radius;
+    Circle(int x, int y, float radius, Texture* texture=nullptr, float rotation=0.f) :
+        Object(x, y, radius * 2, radius * 2, texture, rotation), radius(radius) {}
+
+    Circle(Vector position, float radius, Texture* texture=nullptr, float rotation=0.f) :
+        Object(position, radius * 2, radius * 2, texture, rotation), radius(radius) {}
+
+    bool isInside(Vector point) override {
+        return position.distanceTo(point) <= radius;
+    }
+
+    bool isCollidingWith(Circle* other);
+    bool isColliding(Object& other) override;
+ 
+    virtual void draw() override {
+        drawCircleManual(position, texture, radius, rotation, imageShader);
+    }
+
+    virtual void update() override {
+        ;
+    } 
+
+    std::string toString() const {
+        return "Circle(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(radius) + ")";
+    }
+
+    Vector getTopLeft() override {
+        return Vector(position.x - radius, position.y - radius);
+    }
+
+    float getTopLeftX() override {
+        return position.x - radius;
+    }
+
+    float getTopLeftY() override {
+        return position.y - radius;
+    }
+
+    Vector getBottomRight() override {
+        return Vector(position.x + radius, position.y + radius);
+    }
+
+    float getBottomRightX() override {
+        return position.x + radius;
+    }
+
+    float getBottomRightY() override {
+        return position.y + radius;
+    }
+
+    Vector getBottomLeft() override {
+        return Vector(position.x - radius, position.y + radius);
+    }
+
+    float getBottomLeftX() override {
+        return position.x - radius;
+    }
+
+    float getBottomLeftY() override {
+        return position.y + radius;
+    }
+
+    Vector getTopRight() override {
+        return Vector(position.x + radius, position.y - radius);
+    }
+
+    float getTopRightX() override {
+        return position.x + radius;
+    }
+
+    float getTopRightY() override {
+        return position.y - radius;
+    }
+
+    Vector getCenter() override {
+        return position;
+    }
+
+    float getCenterX() override {
+        return position.x;
+    }
+
+    float getCenterY() override {
+        return position.y;
+    }
+
+    void setTopLeft(Vector topLeft) override {
+        position.x = topLeft.x + radius;
+        position.y = topLeft.y + radius;
+    }
+
+    void setTopLeftX(float topLeftX) override {
+        position.x = topLeftX + radius;
+    }
+
+    void setTopLeftY(float topLeftY) override {
+        position.y = topLeftY + radius;
+    }
+
+    void setBottomLeft(Vector bottomLeft) override {
+        position.x = bottomLeft.x + radius;
+        position.y = bottomLeft.y - radius;
+    }
+
+    void setBottomLeftX(float bottomLeftX) override {
+        position.x = bottomLeftX + radius;
+    }
+
+    void setBottomLeftY(float bottomLeftY) override {
+        position.y = bottomLeftY - radius;
+    }
+
+    void setBottomRight(Vector bottomRight) override {
+        position.x = bottomRight.x - radius;
+        position.y = bottomRight.y - radius;
+    }
+
+    void setBottomRightX(float bottomRightX) override {
+        position.x = bottomRightX - radius;
+    }
+
+    void setBottomRightY(float bottomRightY) override {
+        position.y = bottomRightY - radius;
+    }
+
+    void setTopRight(Vector topRight) override {
+        position.x = topRight.x - radius;
+        position.y = topRight.y + radius;
+    }
+
+    void setTopRightX(float topRightX) override {
+        position.x = topRightX - radius;
+    }
+
+    void setTopRightY(float topRightY) override {
+        position.y = topRightY + radius;
+    }
+
+    void setCenter(Vector center) override {
+        position.x = center.x;
+        position.y = center.y;
+    }
+
+    void setCenterX(float centerX) override {
+        position.x = centerX;
+    }
+
+    void setCenterY(float centerY) override {
+        position.y = centerY;
+    }
+};
+
 class Rectangle : public Object {
 public:
     Rectangle(int x, int y, int width, int height, Texture* texture=nullptr, float rotation=0.f) :
@@ -23,6 +177,8 @@ public:
                 point.y >= position.y && point.y <= position.y + height);
     }
 
+    // bool isCollidingWith(Rectangle& other);
+    bool isCollidingWith(Circle* other);
     bool isColliding(Object& other) override;
 
     virtual void draw() override {
@@ -163,157 +319,6 @@ public:
     }
 };
 
-class Circle : public Object {
-public:
-    float radius;
-    Circle(int x, int y, float radius, Texture* texture=nullptr, float rotation=0.f) :
-        Object(x, y, radius * 2, radius * 2, texture, rotation), radius(radius) {}
-
-    Circle(Vector position, float radius, Texture* texture=nullptr, float rotation=0.f) :
-        Object(position, radius * 2, radius * 2, texture, rotation), radius(radius) {}
-
-    bool isInside(Vector point) override {
-        return position.distanceTo(point) <= radius;
-    }
-
-    bool isColliding(Object& other) override;
- 
-    virtual void draw() override {
-        drawCircleManual(position, texture, radius, rotation, imageShader);
-    }
-
-    virtual void update() override {
-        ;
-    } 
-
-    std::string toString() const {
-        return "Circle(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(radius) + ")";
-    }
-
-    Vector getTopLeft() override {
-        return Vector(position.x - radius, position.y - radius);
-    }
-
-    float getTopLeftX() override {
-        return position.x - radius;
-    }
-
-    float getTopLeftY() override {
-        return position.y - radius;
-    }
-
-    Vector getBottomRight() override {
-        return Vector(position.x + radius, position.y + radius);
-    }
-
-    float getBottomRightX() override {
-        return position.x + radius;
-    }
-
-    float getBottomRightY() override {
-        return position.y + radius;
-    }
-
-    Vector getBottomLeft() override {
-        return Vector(position.x - radius, position.y + radius);
-    }
-
-    float getBottomLeftX() override {
-        return position.x - radius;
-    }
-
-    float getBottomLeftY() override {
-        return position.y + radius;
-    }
-
-    Vector getTopRight() override {
-        return Vector(position.x + radius, position.y - radius);
-    }
-
-    float getTopRightX() override {
-        return position.x + radius;
-    }
-
-    float getTopRightY() override {
-        return position.y - radius;
-    }
-
-    Vector getCenter() override {
-        return position;
-    }
-
-    float getCenterX() override {
-        return position.x;
-    }
-
-    float getCenterY() override {
-        return position.y;
-    }
-
-    void setTopLeft(Vector topLeft) override {
-        position.x = topLeft.x + radius;
-        position.y = topLeft.y + radius;
-    }
-
-    void setTopLeftX(float topLeftX) override {
-        position.x = topLeftX + radius;
-    }
-
-    void setTopLeftY(float topLeftY) override {
-        position.y = topLeftY + radius;
-    }
-
-    void setBottomLeft(Vector bottomLeft) override {
-        position.x = bottomLeft.x + radius;
-        position.y = bottomLeft.y - radius;
-    }
-
-    void setBottomLeftX(float bottomLeftX) override {
-        position.x = bottomLeftX + radius;
-    }
-
-    void setBottomLeftY(float bottomLeftY) override {
-        position.y = bottomLeftY - radius;
-    }
-
-    void setBottomRight(Vector bottomRight) override {
-        position.x = bottomRight.x - radius;
-        position.y = bottomRight.y - radius;
-    }
-
-    void setBottomRightX(float bottomRightX) override {
-        position.x = bottomRightX - radius;
-    }
-
-    void setBottomRightY(float bottomRightY) override {
-        position.y = bottomRightY - radius;
-    }
-
-    void setTopRight(Vector topRight) override {
-        position.x = topRight.x - radius;
-        position.y = topRight.y + radius;
-    }
-
-    void setTopRightX(float topRightX) override {
-        position.x = topRightX - radius;
-    }
-
-    void setTopRightY(float topRightY) override {
-        position.y = topRightY + radius;
-    }
-
-    void setCenter(Vector center) override {
-        position.x = center.x;
-        position.y = center.y;
-    }
-
-    void setCenterX(float centerX) override {
-        position.x = centerX;
-    }
-
-    void setCenterY(float centerY) override {
-        position.y = centerY;
-    }
-};
+;
 
 #endif // SHAPE_HPP
