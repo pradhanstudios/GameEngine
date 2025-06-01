@@ -32,7 +32,7 @@ public:
     MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture), color(color) {}
 
     void draw() override {
-        drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR);
+        drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR, DEG2RAD(20.f));
     }
 
 };
