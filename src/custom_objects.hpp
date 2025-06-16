@@ -15,7 +15,8 @@ public:
 
     void update() override {
         updateGravity();
-        applyCollisions(velocity, acceleration);
+        applyCollisions(position, velocity, acceleration);
+        velocity += acceleration;
         position += velocity;
     }
 
@@ -28,13 +29,12 @@ class MyRectangle : public Rectangle {
 public:
     Vector3 color;
     
-    MyRectangle(int x, int y, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, texture), color(color) {}
-    MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture), color(color) {}
+    MyRectangle(int x, int y, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, texture, DEG2RAD(0.f)), color(color) {}
+    MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture, DEG2RAD(0.f)), color(color) {}
 
     void draw() override {
-        drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR, DEG2RAD(20.f));
+        drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR, rotation);
     }
-
 };
 
 #endif // CUSTOM_OBJECTS_HPP
