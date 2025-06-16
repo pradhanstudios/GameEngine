@@ -168,20 +168,24 @@ void drawCircleManual(Vector position, Texture* texture, int radius, float rotat
 }
 
 
-// bool Rectangle::isCollidingWith(Rectangle& other) {
+// CollisionInfo Rectangle::getCollisionWith(Rectangle& other) {
 //
 // }
 
-bool Rectangle::isCollidingWith(Circle* other) {
+CollisionInfo Rectangle::getCollisionWith(Circle* other) {
+    CollisionInfo info;
     float halfWidth = width * 0.5f;
     float halfHeight = height * 0.5f;
     glm::vec2 circleCenterWorld = glm::vec2(other->position.x, other->position.y);
     glm::vec2 rectCenterWorld = glm::vec2(position.x + halfWidth, position.y + halfHeight);
+    glm::mat4 rectWorldTransform = glm::translate(glm::mat4(1.f), glm::vec3(rectCenterWorld.x, rectCenterWorld.y, 0.f)) *
+                                    glm::rotate(glm::mat4(1.f), rotation, glm::vec3(0.f, 0.f, 1.f));
 
     // Create an inverse transform
-    glm::mat4 inverseTransform = glm::mat4(1.f);
-    inverseTransform = glm::rotate(inverseTransform, -rotation, glm::vec3(0.f, 0.f, 1.f));
-    inverseTransform = glm::translate(inverseTransform, glm::vec3(-rectCenterWorld.x, -rectCenterWorld.y, 0.f));
+    glm::mat4 inverseTransform = glm::inverse(rectWorldTransform);
+    // glm::mat4 inverseTransform = glm::mat4(1.f);
+    // inverseTransform = glm::rotate(inverseTransform, -rotation, glm::vec3(0.f, 0.f, 1.f));
+    // inverseTransform = glm::translate(inverseTransform, glm::vec3(-rectCenterWorld.x, -rectCenterWorld.y, 0.f));
 
     // Make circle positions a vec4 to make matrix multiplication work
     glm::vec4 circleCenterLocalvec4 = inverseTransform * glm::vec4(circleCenterWorld.x, circleCenterWorld.y, 0.f, 1.f);
@@ -193,54 +197,75 @@ bool Rectangle::isCollidingWith(Circle* other) {
         std::max(-halfHeight, std::min(circleCenterLocal.y, halfHeight))
     );
 
-    // Transform that back to normal coordinates
-    glm::mat4 rectWorldTransform = glm::mat4(1.0f);
-    rectWorldTransform = glm::translate(rectWorldTransform, glm::vec3(rectCenterWorld.x, rectCenterWorld.y, 0.0f));
-    rectWorldTransform = glm::rotate(rectWorldTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    // Same process again
     glm::vec4 closestPointWorld4 = rectWorldTransform * glm::vec4(closestPointLocal.x, closestPointLocal.y, 0.0f, 1.0f);
     glm::vec2 closestPointWorld = glm::vec2(closestPointWorld4.x, closestPointWorld4.y);
 
     // Find the distance and see if it is more than the radius of the circle
-    return glm::distance(circleCenterWorld, closestPointWorld) <=other->radius;
+    float distance = glm::distance(circleCenterWorld, closestPointWorld);
+    if (distance <= other->radius) {
+        info.collision = true;
+        info.normal = glm::normalize(circleCenterWorld - closestPointWorld);
+        if (glm::length(info.normal) == 0.f) {
+            info.normal = glm::vec2(0.f, 1.f);
+        }
+
+        float overlap = other->radius - distance;
+        info.mtv = info.normal * overlap;
+    }
+
+    return info;
 }
 
 // Define the collision methods after both classes are fully declared
-inline bool Rectangle::isColliding(Object& other) {
+inline CollisionInfo Rectangle::getCollision(Object& other) {
     if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
-        return !(position.x > rect->position.x + rect->width ||
-                 position.x + width < rect->position.x ||
-                 position.y > rect->position.y + rect->height ||
-                 position.y + height < rect->position.y);
+        return CollisionInfo();
+        // return !(position.x > rect->position.x + rect->width ||
+        //          position.x + width < rect->position.x ||
+        //          position.y > rect->position.y + rect->height ||
+        //          position.y + height < rect->position.y);
     } 
 
     else if (Circle* circle = dynamic_cast<Circle*>(&other)) {
         // float closestX = std::max(position.x, std::min(circle->position.x, position.x + width));
         // float closestY = std::max(position.y, std::min(circle->position.y, position.y + height));
         // return circle->position.distanceTo(Vector(closestX, closestY)) <= circle->radius;
-        return isCollidingWith(circle);
+        return getCollisionWith(circle);
     }
 
-    return false;
+    return CollisionInfo();
 }
 
-bool Circle::isCollidingWith(Circle* other) {
+CollisionInfo Circle::getCollisionWith(Circle* other) {
+    CollisionInfo info;
     float distance = position.distanceTo(other->position);
-    return distance <= (radius + other->radius);
+    if (distance <= (radius + other->radius)) {
+        info.collision = true;
+        glm::vec2 position_glm = glm::vec2(position.x, position.y);
+        glm::vec2 otherpos_glm = glm::vec2(other->position.x, other->position.y);
+        info.normal = glm::normalize(position_glm - otherpos_glm);
+        if (glm::length(info.normal) == 0.f) {
+            info.normal = glm::vec2(0.f, 1.f);
+        }
+
+        float overlap = (radius + other->radius) - distance;
+        info.mtv = info.normal * overlap;
+    }
+
+    return info;
 }
 
-inline bool Circle::isColliding(Object& other) {
+inline CollisionInfo Circle::getCollision(Object& other) {
     if (Circle* circle = dynamic_cast<Circle*>(&other)) {
-        return isCollidingWith(circle);
+        return getCollisionWith(circle);
     } 
 
     else if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
         // float closestX = std::max(rect->position.x, std::min(position.x, rect->position.x + rect->width));
         // float closestY = std::max(rect->position.y, std::min(position.y, rect->position.y + rect->height));
         // return position.distanceTo(Vector(closestX, closestY)) <= radius;
-        return rect->isCollidingWith(this);
+        return rect->getCollisionWith(this);
     }
 
-    return false;
+    return CollisionInfo();
 }
