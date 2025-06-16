@@ -23,8 +23,8 @@ public:
         return position.distanceTo(point) <= radius;
     }
 
-    bool isCollidingWith(Circle* other);
-    bool isColliding(Object& other) override;
+    CollisionInfo getCollisionWith(Circle* other);
+    CollisionInfo getCollision(Object& other) override;
  
     virtual void draw() override {
         drawCircleManual(position, texture, radius, rotation, imageShader);
@@ -177,9 +177,9 @@ public:
                 point.y >= position.y && point.y <= position.y + height);
     }
 
-    // bool isCollidingWith(Rectangle& other);
-    bool isCollidingWith(Circle* other);
-    bool isColliding(Object& other) override;
+    // CollisionInfo getCollisionWith(Rectangle& other);
+    CollisionInfo getCollisionWith(Circle* other);
+    CollisionInfo getCollision(Object& other) override;
 
     virtual void draw() override {
         drawRectangleManual(position, texture, width, height, imageShader);

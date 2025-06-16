@@ -6,6 +6,13 @@
 #include "vector.hpp"
 #include "texture.hpp"
 
+struct CollisionInfo {
+    glm::vec2 normal;
+    glm::vec2 mtv;
+    bool collision;
+    CollisionInfo() : normal(glm::vec2(0.f, 0.f)), mtv(glm::vec2(0.f, 0.f)) {}
+};
+
 class Object {
 public:
     Vector position;
@@ -31,21 +38,10 @@ public:
         return false;
     }
 
-    virtual bool isColliding(Object&) {
+    virtual CollisionInfo getCollision(Object&) {
         // Placeholder for collision detection logic
-        return false;
+        return CollisionInfo();
     }
-
-    bool isColliding(ObjectList& objects, size_t i) {
-        // placeholder for collision detection with a list of objects
-        for (size_t j = 0; j < objects.size(); j++) {
-            if (j != i && isColliding(*objects[j])) {
-                return true;
-            }
-        }
-        
-        return false;
-    } 
 
     virtual void draw() {
         // Placeholder for drawing logic
@@ -91,6 +87,84 @@ public:
     virtual void setTopRightY(float) {}
 };
 
+class Collision {
+public:
+    CollisionInfo info;
+
+    Collision() : info(CollisionInfo()) {}
+    // void setCollisionDirection(Object &object, Object& other) {
+    //     collisions = 0;
+    //     Vector position = object.position;
+    //     if (position.x < other.position.x) {
+    //         collisions |= LEFT_COLLISION;
+    //     }
+    //
+    //     if (position.x > other.position.x + other.width) {
+    //         collisions |= RIGHT_COLLISION;
+    //     }
+    //
+    //     if (position.y > other.position.y) {
+    //         collisions |= TOP_COLLISION;
+    //     }
+    //
+    //     if (position.y < other.position.y + other.height) {
+    //         collisions |= BOTTOM_COLLISION;
+    //     }
+    // }
+    //
+    void setCollision(Object& object, Object& other) {
+        info = object.getCollision(other);
+    }
+
+    virtual void applyCollisions(Vector& position, Vector& velocity, Vector& acceleration) {
+        if (!info.collision) {
+            return;
+        } 
+        
+        position.x += info.mtv.x;
+        position.y += info.mtv.y;
+
+        glm::vec2 velocity_glm = glm::vec2(velocity.x, velocity.y);
+        float velocityDotNormal = glm::dot(velocity_glm, info.normal);
+
+        if (velocityDotNormal < 0.f) {
+            glm::vec2 normalVelocityComponent = info.normal * velocityDotNormal;
+            glm::vec2 tangentialVelocityComponent = velocity_glm - normalVelocityComponent;
+            const float bounce = 0.f;
+            normalVelocityComponent = -normalVelocityComponent * bounce; 
+            tangentialVelocityComponent *= (1.f - friction);
+            glm::vec2 resolvedVelocity = normalVelocityComponent + tangentialVelocityComponent;
+            velocity.x = resolvedVelocity.x;
+            velocity.y = resolvedVelocity.y;
+        }
+
+        glm::vec2 acceleration_glm = glm::vec2(acceleration.x, acceleration.y);
+        float accelerationDotNormal = glm::dot(acceleration_glm, info.normal);
+
+        // Later implement more advanced accleration system, for now it will just 
+        if (glm::dot(info.normal, glm::vec2(0.0f, 1.0f)) > 0.7f) { // Normal is pointing mostly upwards (like a floor)
+            if (acceleration.y < 0) { 
+                acceleration.y = 0; 
+            }
+
+            // If the object's vertical velocity is very small after collision,
+            // set it to zero to prevent tiny bounces/jittering on a flat surface.
+            if (glm::abs(velocity.y) < 0.1f) { // Threshold for "stopped vertically"
+                velocity.y = 0;
+            }
+        }
+
+        if (glm::dot(info.normal, glm::vec2(0.0f, -1.0f)) > 0.7f) {
+            if (acceleration.y > 0) { // If acceleration is pulling upwards (e.g. anti-gravity)
+                acceleration.y = 0;
+            }
+            if (glm::abs(velocity.y) < 0.1f) {
+                velocity.y = 0;
+            }
+        }
+    }
+};
+
 class Moveable {
 public:
     Vector velocity;
@@ -117,56 +191,5 @@ public:
     }
 };
 
-class Collision {
-public:
-    uint8_t collisions;    
-    Collision() : collisions(0) {}
-    void setCollisionDirection(Object &object, Object& other) {
-        collisions = 0;
-        Vector position = object.position;
-        if (position.x < other.position.x) {
-            collisions |= LEFT_COLLISION;
-            object.setTopLeftX(other.getTopRightX() + epsilon);
-        }
-        if (position.x > other.position.x + other.width) {
-            collisions |= RIGHT_COLLISION;
-            object.setTopRightX(other.getTopLeftX() - epsilon);
-        }
-        if (position.y > other.position.y) {
-            collisions |= TOP_COLLISION;
-            object.setTopRightY(other.getBottomLeftY() + epsilon);
-        }
-        if (position.y < other.position.y + other.height) {
-            collisions |= BOTTOM_COLLISION;
-            object.setBottomLeftY(other.getTopLeftY() - epsilon);
-        }
-    }
-
-    bool colliding(uint8_t direction) {
-        return collisions & direction;
-    }
-
-    virtual void applyCollisions(Vector& velocity, Vector& acceleration) {
-        if (colliding(LEFT_COLLISION) && velocity.x < 0) {
-            velocity.x = 0;
-            acceleration.x = 0;
-        }
-
-        if (colliding(RIGHT_COLLISION) && velocity.x > 0) {
-            velocity.x = 0;
-            acceleration.x = 0;
-        }
-
-        if (colliding(TOP_COLLISION) && velocity.y < 0) {
-            velocity.y = 0;
-            acceleration.y = 0;
-        }
-
-        if (colliding(BOTTOM_COLLISION) && velocity.y > 0) {
-            velocity.y = 0;
-            acceleration.y = 0;
-        }
-    }
-};
 
 #endif // OBJECT_HPP
