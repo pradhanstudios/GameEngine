@@ -37,7 +37,7 @@ void display() {
         objects[i]->draw();
     }
  
-    roboto->renderSentence("Hello World", 48, Vector(0, 0), GREEN);
+    roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), GREEN);
 
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));

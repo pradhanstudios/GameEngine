@@ -41,18 +41,18 @@ inline float acceleration = 1.f;
 inline float friction = 1.f;
 
 // Colors
-#define WHITE Vector3(1.f, 1.f, 1.f)
-#define BLACK Vector3(0.f, 0.f, 0.f)
-#define RED Vector3(1.f, 0.f, 0.f)
-#define GREEN Vector3(0.f, 1.f, 0.f)
-#define BLUE Vector3(0.f, 0.f, 1.f)
-#define YELLOW Vector3(1.f, 1.f, 0.f)
-#define CYAN Vector3(0.f, 1.f, 1.f)
-#define MAGENTA Vector3(1.f, 0.f, 1.f)
-#define ORANGE Vector3(1.f, 0.5f, 0.f)
-#define PURPLE Vector3(0.5f, 0.f, 1.f)
-#define PINK Vector3(1.f, 0.5f, 0.5f)
-#define BROWN Vector3(0.5f, 0.25f, 0.f)
+#define WHITE vec3(1.f, 1.f, 1.f)
+#define BLACK vec3(0.f, 0.f, 0.f)
+#define RED vec3(1.f, 0.f, 0.f)
+#define GREEN vec3(0.f, 1.f, 0.f)
+#define BLUE vec3(0.f, 0.f, 1.f)
+#define YELLOW vec3(1.f, 1.f, 0.f)
+#define CYAN vec3(0.f, 1.f, 1.f)
+#define MAGENTA vec3(1.f, 0.f, 1.f)
+#define ORANGE vec3(1.f, 0.5f, 0.f)
+#define PURPLE vec3(0.5f, 0.f, 1.f)
+#define PINK vec3(1.f, 0.5f, 0.5f)
+#define BROWN vec3(0.5f, 0.25f, 0.f)
 #define USE_COLOR 1
 #define NO_USE_COLOR 0
 

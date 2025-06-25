@@ -50,7 +50,7 @@ Font::Font(const char* path) {
     FT_Done_FreeType(ft);
 }
 
-void Font::renderSentence(const char* sentence, int fontSize, Vector position, Vector3 color) {
+void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec3 color, float rotation) {
     glUseProgram(textShader);
 
     // set color
@@ -64,14 +64,12 @@ void Font::renderSentence(const char* sentence, int fontSize, Vector position, V
     for (int i = 0; *(sentence + i) != '\0'; i++) {
         char c = *(sentence + i);
         Character character = getCharacter(c);
-        // printf("Character: %c, Texture id: %u\n", c, texture.textureID);
 
         float scale = fontSize / 48.f;
-        Vector characterAdjustedSize = getCharacterSize(character, fontSize);
-        Vector characterAdjustedPosition = Vector(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
-        // printf("Character '%c' width %i height %i BearingX %i BearingY %i\n", c, character.width, character.height, character.bearingX, character.bearingY);
+        vec2 characterAdjustedSize = getCharacterSize(character, fontSize);
+        vec2 characterAdjustedPosition = vec2(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
 
-        drawRectangleManual(characterAdjustedPosition, static_cast<Texture*>(&character), characterAdjustedSize.x, characterAdjustedSize.y, textShader);
+        drawRectangleManual(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), textShader);
         position.x += character.advance * scale;
     }
 

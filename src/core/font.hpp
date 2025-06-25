@@ -19,11 +19,11 @@ private:
     Character characters[95];
 public:
     Font(const char* path);
-    void renderSentence(const char* sentence, int fontSize, Vector position, Vector3 color=WHITE);
+    void renderSentence(const char* sentence, int fontSize, vec2 position, vec3 color=WHITE, float rotation=0.f);
 
-    inline Vector getCharacterSize(Character character, int fontSize=48) {
+    inline vec2 getCharacterSize(Character character, int fontSize=48) {
         float scale = fontSize / 48.f;
-        return Vector(character.width * scale, character.height * scale);
+        return vec2(character.width * scale, character.height * scale);
     }
 
     inline void setCharacter(char character, Character texture) {
