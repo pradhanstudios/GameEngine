@@ -10,6 +10,10 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 void drawRectangleManual(Vector position, Texture* texture, int width, int height, GLuint shader, Vector3 color=WHITE, bool useColor=NO_USE_COLOR, float rotationAngleRad=0.f);
 void drawCircleManual(Vector position, Texture* texture, int radius, float rotation, GLuint shader, Vector3 color=WHITE, bool useColor=NO_USE_COLOR);
 
+struct Projection {
+    float min, max;
+};
+
 class Circle : public Object {
 public:
     float radius;
@@ -177,12 +181,14 @@ public:
                 point.y >= position.y && point.y <= position.y + height);
     }
 
-    // CollisionInfo getCollisionWith(Rectangle& other);
+    std::array<glm::vec2, 4> getTransformedVertices();
+    Projection projectVertices(std::array<glm::vec2, 4>, glm::vec2& axis);
+    CollisionInfo getCollisionWith(Rectangle* other);
     CollisionInfo getCollisionWith(Circle* other);
     CollisionInfo getCollision(Object& other) override;
 
     virtual void draw() override {
-        drawRectangleManual(position, texture, width, height, imageShader);
+        drawRectangleManual(position, texture, width, height, imageShader, WHITE, NO_USE_COLOR, rotation);
     }
 
     virtual void update() override {
