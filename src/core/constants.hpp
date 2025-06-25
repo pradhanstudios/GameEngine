@@ -38,7 +38,7 @@ inline int fps = 60;
 // Physics
 inline float gravity = 0.5f;
 inline float acceleration = 1.f;
-inline float friction = -0.12f;
+inline float friction = 1.f;
 
 // Colors
 #define WHITE Vector3(1.f, 1.f, 1.f)
