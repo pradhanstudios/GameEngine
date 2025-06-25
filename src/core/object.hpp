@@ -141,7 +141,7 @@ public:
         glm::vec2 acceleration_glm = glm::vec2(acceleration.x, acceleration.y);
         float accelerationDotNormal = glm::dot(acceleration_glm, info.normal);
 
-        // Later implement more advanced accleration system, for now it will just 
+        // Later implement more advanced accleration system
         if (glm::dot(info.normal, glm::vec2(0.0f, 1.0f)) > 0.7f) { // Normal is pointing mostly upwards (like a floor)
             if (acceleration.y < 0) { 
                 acceleration.y = 0; 
