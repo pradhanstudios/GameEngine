@@ -4,13 +4,13 @@
 
 class MyCircle : public Circle, public WithGravity, public Collision {
 public:
-    MyCircle(int x, int y, float radius, Texture* texture=nullptr) :
-        Circle(x, y, radius, texture) {}
-    MyCircle(Vector position, float radius, Texture* texture=nullptr) :
-        Circle(position, radius, texture) {}
+    MyCircle(float x, float y, float radius, Texture* texture=nullptr) :
+        Circle(x, y, radius, 0.f, texture) {}
+    MyCircle(vec2 position, float radius, Texture* texture=nullptr) :
+        Circle(position, radius, 0.f, texture) {}
 
     void draw() override {
-        drawCircleManual(position, texture, radius, DEG2RAD(90.f), imageShader);
+        drawCircleManual(position, radius, DEG2RAD(90.f), texture, imageShader);
     }
 
     void update() override {
@@ -27,7 +27,7 @@ public:
 
 class CollisionRectangle : public Rectangle, public WithGravity, public Collision {
 public:
-    CollisionRectangle(int x, int y, int width, int height, Texture* texture=nullptr, float rotation=0.f) : Rectangle(x, y, width, height, texture, rotation) {}
+    CollisionRectangle(float x, float y, float width, float height, Texture* texture=nullptr, float rotation=0.f) : Rectangle(x, y, width, height, rotation, texture) {}
     void update() override {
         updateGravity();
         applyCollisions(position, velocity, acceleration);
@@ -38,13 +38,13 @@ public:
 
 class MyRectangle : public Rectangle {
 public:
-    Vector3 color;
+    vec3 color;
     
-    MyRectangle(int x, int y, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, texture, DEG2RAD(10.f)), color(color) {}
-    MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture, DEG2RAD(10.f)), color(color) {}
+    MyRectangle(float x, float y, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, DEG2RAD(10.f), texture), color(color) {}
+    MyRectangle(vec2 position, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(position, width, height, DEG2RAD(10.f), texture), color(color) {}
 
     void draw() override {
-        drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR, rotation);
+        drawRectangleManual(getCenter(), width, height, rotation, texture, imageShader, color, USE_COLOR);
     }
 };
 
