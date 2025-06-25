@@ -167,11 +167,6 @@ void drawCircleManual(Vector position, Texture* texture, int radius, float rotat
     glDeleteBuffers(1, &VBO);
 }
 
-
-// CollisionInfo Rectangle::getCollisionWith(Rectangle& other) {
-//
-// }
-
 CollisionInfo Rectangle::getCollisionWith(Circle* other) {
     CollisionInfo info;
     float halfWidth = width * 0.5f;
@@ -216,10 +211,143 @@ CollisionInfo Rectangle::getCollisionWith(Circle* other) {
     return info;
 }
 
+std::array<glm::vec2, 4> Rectangle::getTransformedVertices() {
+    std::array<glm::vec2, 4> transformedVertices;
+    float halfWidth = width * 0.5f;
+    float halfHeight = height * 0.5f;
+
+    glm::vec2 localCorners[4] = {
+        glm::vec2(-halfWidth,  halfHeight), // bottom left 
+        glm::vec2( halfWidth,  halfHeight), // bottom right 
+        glm::vec2( halfWidth, -halfHeight), // top right 
+        glm::vec2(-halfWidth, -halfHeight)  // top left
+    };
+
+    // Build transformation matrix for world space
+    glm::mat4 transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3(position.x + halfWidth, position.y + halfHeight, 0.0f)); // Translate to center
+    transform = glm::rotate(transform, rotation, glm::vec3(0.0f, 0.0f, 1.0f)); // Apply rotation
+
+    // Transform each local corner to world space
+    for (int i = 0; i < 4; ++i) {
+        glm::vec4 worldPos = transform * glm::vec4(localCorners[i].x, localCorners[i].y, 0.0f, 1.0f);
+        transformedVertices[i] = glm::vec2(worldPos.x, worldPos.y);
+    }
+
+    return transformedVertices;
+}
+
+Projection Rectangle::projectVertices(std::array<glm::vec2, 4> vertices, glm::vec2& axis) {
+    // Ensure axis is normalized for correct dot products
+    glm::vec2 normalizedAxis = glm::normalize(axis);
+
+    float min = glm::dot(vertices[0], normalizedAxis);
+    float max = min;
+
+    for (size_t i = 1; i < 4; ++i) {
+        float p = glm::dot(vertices[i], normalizedAxis);
+        if (p < min) {
+            min = p;
+        } else if (p > max) {
+            max = p;
+        }
+    }
+
+    return {min, max};
+}
+
+CollisionInfo Rectangle::getCollisionWith(Rectangle* other) {
+    CollisionInfo info; // Initialize to no collision
+    info.collision = false;
+
+    // 1. Get world-space vertices for both rectangles
+    std::array<glm::vec2, 4> verticesA = this->getTransformedVertices();
+    std::array<glm::vec2, 4> verticesB = other->getTransformedVertices();
+    // printf("Rectangle A Vertices:\n");
+    // for (int i = 0; i < 4; ++i) {
+    //     printf("  V%d: (%f, %f)\n", i, verticesA[i].x, verticesA[i].y);
+    // }
+    // printf("Rectangle B Vertices:\n");
+    // for (int i = 0; i < 4; ++i) {
+    //     printf("  V%d: (%f, %f)\n", i, verticesB[i].x, verticesB[i].y);
+    // }
+
+    // 2. Define the candidate axes (normals of the faces)
+    glm::vec2 axes[4];
+
+    // Axes from Rectangle A (two unique normal directions)
+    glm::vec2 edgeA1 = verticesA[1] - verticesA[0]; // Example edge
+    glm::vec2 axisA1 = glm::normalize(glm::vec2(-edgeA1.y, edgeA1.x)); // Perpendicular to edgeA1
+    axes[0] = axisA1;
+
+    glm::vec2 edgeA2 = verticesA[2] - verticesA[1]; // Another adjacent edge
+    glm::vec2 axisA2 = glm::normalize(glm::vec2(-edgeA2.y, edgeA2.x)); // Perpendicular to edgeA2
+    axes[1] = axisA2;
+
+    // Axes from Rectangle B (two unique normal directions)
+    glm::vec2 edgeB1 = verticesB[1] - verticesB[0];
+    glm::vec2 axisB1 = glm::normalize(glm::vec2(-edgeB1.y, edgeB1.x));
+    axes[2] = axisB1;
+
+    glm::vec2 edgeB2 = verticesB[2] - verticesB[1];
+    glm::vec2 axisB2 = glm::normalize(glm::vec2(-edgeB2.y, edgeB2.x));
+    axes[3] = axisB2;
+
+    float minOverlap = std::numeric_limits<float>::max(); // Stores the smallest overlap found
+    glm::vec2 mtvAxis; // Stores the axis corresponding to the minOverlap
+
+    // 3. Loop through all candidate axes and check for separation
+    for (glm::vec2 axis : axes) {
+        // Project both rectangles onto the current axis
+        Projection pA = projectVertices(verticesA, axis);
+        Projection pB = projectVertices(verticesB, axis);
+
+        // Check for overlap on this axis
+        if (pA.max < pB.min || pB.max < pA.min) {
+            info.collision = false;
+            return info;
+        }
+
+        float overlap = std::min(pA.max, pB.max) - std::max(pA.min, pB.min);
+
+        // Keep track of the minimum overlap found and its corresponding axis
+        if (overlap < minOverlap) {
+            minOverlap = overlap;
+            mtvAxis = axis;
+        }
+    }
+
+    info.collision = true;
+
+    // Get centers of both rectangles (for determining relative direction)
+    float halfWidth = width / 2.f;
+    float halfHeight = height / 2.f;
+    float otherHalfWidth = other->width / 2.f;
+    float otherHalfHeight = other->height / 2.f;
+    glm::vec2 centerA = glm::vec2(position.x + halfWidth, position.y + halfHeight); // Assuming position is center
+    glm::vec2 centerB = glm::vec2(other->position.x + otherHalfWidth, other->position.y + otherHalfHeight);
+
+    // Vector from A's center to B's center
+    glm::vec2 centerAToB = centerB - centerA;
+
+    // If the mtvAxis points in the same general direction as centerAToB,
+    // then the MTV needs to push A *against* that direction.
+    // If dot product is negative, it means mtvAxis and centerAToB are in opposite directions.
+    if (glm::dot(centerAToB, mtvAxis) < 0) {
+        info.mtv = mtvAxis * minOverlap; // MTV pushes A away from B
+        info.normal = mtvAxis;
+    } else {
+        info.mtv = -mtvAxis * minOverlap; // MTV pushes A away from B
+        info.normal = -mtvAxis;
+    }
+
+    return info;
+}
+
 // Define the collision methods after both classes are fully declared
 inline CollisionInfo Rectangle::getCollision(Object& other) {
     if (Rectangle* rect = dynamic_cast<Rectangle*>(&other)) {
-        return CollisionInfo();
+        return getCollisionWith(rect);
         // return !(position.x > rect->position.x + rect->width ||
         //          position.x + width < rect->position.x ||
         //          position.y > rect->position.y + rect->height ||
