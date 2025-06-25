@@ -25,12 +25,23 @@ public:
     }
 };
 
+class CollisionRectangle : public Rectangle, public WithGravity, public Collision {
+public:
+    CollisionRectangle(int x, int y, int width, int height, Texture* texture=nullptr, float rotation=0.f) : Rectangle(x, y, width, height, texture, rotation) {}
+    void update() override {
+        updateGravity();
+        applyCollisions(position, velocity, acceleration);
+        velocity += acceleration;
+        position += velocity;
+    }
+};
+
 class MyRectangle : public Rectangle {
 public:
     Vector3 color;
     
-    MyRectangle(int x, int y, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, texture, DEG2RAD(0.f)), color(color) {}
-    MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture, DEG2RAD(0.f)), color(color) {}
+    MyRectangle(int x, int y, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, texture, DEG2RAD(10.f)), color(color) {}
+    MyRectangle(Vector position, int width, int height, Vector3 color, Texture* texture=nullptr) : Rectangle(position, width, height, texture, DEG2RAD(10.f)), color(color) {}
 
     void draw() override {
         drawRectangleManual(position, texture, width, height, imageShader, color, USE_COLOR, rotation);
