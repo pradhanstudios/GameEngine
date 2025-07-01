@@ -5,5 +5,6 @@
 #include "texture.hpp"
 #include "font.hpp"
 #include "shaders.hpp"
+#include "draw.hpp"
 #include <chrono>
 #include <thread>
