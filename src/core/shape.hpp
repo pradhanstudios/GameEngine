@@ -6,10 +6,6 @@
 #include "object.hpp"
 #include "vector.hpp"
 
-void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, GLuint VAO, GLsizei vertexCount, GLuint shader, GLenum primitiveType, GLenum textureUnit, bool useElements, GLuint textureID, vec3 color, bool useColor);
-void drawRectangleManual(vec2 centerPosition, float width, float height, float rotation, Texture* texture, GLuint shader, vec3 color=WHITE, bool useColor=NO_USE_COLOR);
-void drawCircleManual(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color=WHITE, bool useColor=NO_USE_COLOR);
-
 struct Projection {
     float min, max;
 };
@@ -30,10 +26,6 @@ public:
     CollisionInfo getCollisionWith(Circle* other);
     CollisionInfo getCollision(Object& other) override;
  
-    virtual void draw() override {
-        drawCircleManual(position, radius, rotation, texture, imageShader);
-    }
-
     virtual void update() override {
         ;
     } 
@@ -86,11 +78,6 @@ public:
     CollisionInfo getCollisionWith(Rectangle* other);
     CollisionInfo getCollisionWith(Circle* other);
     CollisionInfo getCollision(Object& other) override;
-
-    virtual void draw() override {
-        bool useColor = texture->textureID ? NO_USE_COLOR : USE_COLOR;
-        drawRectangleManual(getCenter(), width, height, rotation, texture, imageShader, WHITE, useColor);
-    }
 
     virtual void update() override {
         ;
