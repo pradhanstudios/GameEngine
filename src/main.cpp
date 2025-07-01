@@ -30,11 +30,12 @@ void display() {
                 collision->setCollision(*objects[i], *objects[j]);
             }
         }
+
         objects[i]->update();
     }
 
     for (size_t i = 0; i < objects.size(); i++) {
-        objects[i]->draw();
+        draw(objects[i].get());
     }
  
     roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), GREEN);
