@@ -84,7 +84,7 @@ public:
             velocity = normalVelocityComponent + tangentialVelocityComponent;
         }
 
-        float accelerationDotNormal = glm::dot(acceleration, info.normal);
+        // float accelerationDotNormal = glm::dot(acceleration, info.normal);
 
         // Later implement more advanced accleration system
         if (glm::dot(info.normal, vec2(0.0f, 1.0f)) > 0.7f) { // Normal is pointing mostly upwards (like a floor)
