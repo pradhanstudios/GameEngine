@@ -55,5 +55,4 @@ inline float friction = 1.f;
 #define BROWN vec3(0.5f, 0.25f, 0.f)
 #define USE_COLOR 1
 #define NO_USE_COLOR 0
-
 #endif // CONSTANTS_HPP
