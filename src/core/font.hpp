@@ -6,7 +6,7 @@
 #include "shaders.hpp"
 #include "vector.hpp"
 #include "texture.hpp"
-#include "shape.hpp"
+#include "draw.hpp"
 
 class Character : public Texture {
 public:
