@@ -26,6 +26,7 @@ void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
     for (size_t i = 0; i < objects.size(); i++) {
         if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
+            collision->resetCollision();
             for (size_t j = 0; j < objects.size(); j++) {
                 collision->setCollision(*objects[i], *objects[j]);
             }
