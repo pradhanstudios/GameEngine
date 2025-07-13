@@ -3,6 +3,8 @@
 
 #include "constants.hpp"
 
+#define vec00 (vec2(0.f, 0.f))
+#define vec001 (vec3(0.f, 0.f, 1.f))
 typedef glm::vec2 vec2;
 typedef glm::vec3 vec3;
 typedef glm::vec4 vec4;
