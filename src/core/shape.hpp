@@ -5,10 +5,7 @@
 #include "shaders.hpp"
 #include "object.hpp"
 #include "vector.hpp"
-
-struct Projection {
-    float min, max;
-};
+#include "collision.hpp"
 
 class Circle : public Object {
 public:
@@ -23,8 +20,8 @@ public:
     //     return position.distanceTo(point) <= radius;
     // }
 
-    CollisionInfo getCollisionWith(Circle* other);
-    CollisionInfo getCollision(Object& other) override;
+    // CollisionInfo getCollisionWith(Circle* other);
+    // CollisionInfo getCollision(Object& other) override;
  
     virtual void update() override {
         ;
@@ -73,11 +70,11 @@ public:
     //             point.y >= position.y && point.y <= position.y + height);
     // }
 
-    std::array<vec2, 4> getTransformedVertices();
-    Projection projectVertices(std::array<vec2, 4>, vec2& axis);
-    CollisionInfo getCollisionWith(Rectangle* other);
-    CollisionInfo getCollisionWith(Circle* other);
-    CollisionInfo getCollision(Object& other) override;
+    // std::array<vec2, 4> getTransformedVertices();
+    // Projection projectVertices(std::array<vec2, 4>, vec2& axis);
+    // CollisionInfo getCollisionWith(Rectangle* other);
+    // CollisionInfo getCollisionWith(Circle* other);
+    // CollisionInfo getCollision(Object& other) override;
 
     virtual void update() override {
         ;
