@@ -55,7 +55,7 @@ class WithGravity : public Moveable {
 public:
     WithGravity() : Moveable() {}
     void applyGravity() {
-        acceleration.y = GRAVITY;
+        acceleration.y = Physics::Gravity;
     }
 };
 

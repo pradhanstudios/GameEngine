@@ -40,10 +40,10 @@ void display() {
         objects[i]->draw();
     }
  
-    roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), GREEN);
+    roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), Color::Green);
 
     glutSwapBuffers();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / fps));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / Display::Fps));
     glutPostRedisplay();
 } 
  
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_STENCIL | GLUT_DEPTH); 
       
     // giving window size in X- and Y- directon 
-    glutInitWindowSize(RESOLUTION_WIDTH, RESOLUTION_HEIGHT); 
+    glutInitWindowSize(Display::Width, Display::Height); 
     glutInitWindowPosition(0, 0); 
     glutCreateWindow("Game Engine Core Testing"); 
 
@@ -61,13 +61,13 @@ int main(int argc, char** argv) {
 
     Texture* rickroll = new Texture(loadBMPTexture("assets/rickroll.bmp"));
 
-    objects.push_back(std::make_unique<MyCircle>(MyCircle(RESOLUTION_WIDTH / 3, 0, 50, rickroll)));
-    objects[0]->setCenterY(RESOLUTION_HEIGHT / 2 - 300);
-    objects.push_back(std::make_unique<CollisionRectangle>(CollisionRectangle(RESOLUTION_WIDTH / 3 * 2, 0, 200, 100, rickroll, DEG2RAD(45.f))));
+    objects.push_back(std::make_unique<MyCircle>(MyCircle(Display::Width / 3, 0, 50, rickroll)));
+    objects[0]->setCenterY(Display::Height / 2 - 300);
+    objects.push_back(std::make_unique<CollisionRectangle>(CollisionRectangle(Display::Width / 3 * 2, 0, 200, 100, rickroll, DEG2RAD(45.f))));
     objects[1]->setCenterY(0);
-    objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, RESOLUTION_HEIGHT - 50, RESOLUTION_WIDTH, 50, RED)));
-    objects[2]->setCenterX(RESOLUTION_WIDTH / 2);
-    objects[2]->setCenterY(RESOLUTION_HEIGHT - 200);
+    objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, Display::Height - 50, Display::Width, 50, Color::Red)));
+    objects[2]->setCenterX(Display::Width / 2);
+    objects[2]->setCenterY(Display::Height - 200);
      
     glutDisplayFunc(display); 
     glutMainLoop(); 
