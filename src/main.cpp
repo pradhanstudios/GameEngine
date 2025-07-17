@@ -28,7 +28,8 @@ void display() {
         if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
             collision->resetCollision();
             for (size_t j = 0; j < objects.size(); j++) {
-                collision->setCollision(*objects[i], *objects[j]);
+                if (i != j)
+                    collision->setCollision(objects[i].get(), objects[j].get());
             }
         }
 
@@ -36,7 +37,7 @@ void display() {
     }
 
     for (size_t i = 0; i < objects.size(); i++) {
-        draw(objects[i].get());
+        objects[i]->draw();
     }
  
     roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), GREEN);
