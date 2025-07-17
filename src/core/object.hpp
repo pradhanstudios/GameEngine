@@ -5,6 +5,7 @@
 #include "shaders.hpp"
 #include "vector.hpp"
 #include "texture.hpp"
+#include "collision.hpp"
 
 class Object {
 public:
@@ -25,19 +26,14 @@ public:
         height(height),
         rotation(rotation),
 	    texture(texture) {}
-    
-    virtual void draw() {
-        // Placeholder for drawing logic
-    }
-    
-    virtual void update() {
-        // Placeholder for update logic
-    }
 
     virtual std::string toString() const {
         return "Object(" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ")";
     }
 
+    virtual void update() {}
+    virtual void draw() {}
+    virtual CollisionInfo collision(Object*) { return CollisionInfo(); }
     virtual vec2 getCenter() { return vec2(); }
     virtual float getCenterX() { return 0.0f; }
     virtual float getCenterY() { return 0.0f; }
@@ -58,17 +54,8 @@ public:
 class WithGravity : public Moveable {
 public:
     WithGravity() : Moveable() {}
-    void updateGravity() {
-        applyGravity();
-        applyAcceleration();
-    }
-    
     void applyGravity() {
-        acceleration.y = gravity;
-    }
-
-    void applyAcceleration() {
-        velocity.y += acceleration.y * 0.5f;
+        acceleration.y = GRAVITY;
     }
 };
 
