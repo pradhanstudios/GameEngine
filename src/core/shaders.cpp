@@ -1,9 +1,10 @@
 #include "shaders.hpp"
 
-GLuint textShader = 0;
-GLuint imageShader = 0;
+namespace Shader {
+GLuint Text = 0;
+GLuint Shape = 0;
 
-char* readFile(const char* filename) {
+char* _read(const char* filename) {
     char* content;
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -31,12 +32,12 @@ char* readFile(const char* filename) {
     return content;
 }
 
-GLuint initShaders(const char* vertShader, const char* fragShader) {
+GLuint init(const char* vertShader, const char* fragShader) {
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    char* vertexSource = readFile(vertShader);
-    char* fragmentSource = readFile(fragShader);
+    char* vertexSource = _read(vertShader);
+    char* fragmentSource = _read(fragShader);
 
     glShaderSource(vertexShader, 1, &vertexSource, nullptr);
     glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
@@ -86,4 +87,5 @@ GLuint initShaders(const char* vertShader, const char* fragShader) {
     free(fragmentSource);
 
     return program;
+}
 }

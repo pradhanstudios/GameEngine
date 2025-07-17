@@ -53,7 +53,7 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 
 void drawRectangle(Rectangle* rect) {
     bool useColor = rect->texture ? NO_USE_COLOR : USE_COLOR;
-    drawRectangle(rect->getCenter(), rect->width, rect->height, rect->rotation, rect->texture, imageShader, WHITE, useColor);
+    drawRectangle(rect->getCenter(), rect->width, rect->height, rect->rotation, rect->texture, Shader::Shape, WHITE, useColor);
 }
 
 void drawRectangle(vec2 centerPosition, float width, float height, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
@@ -110,7 +110,7 @@ void drawRectangle(vec2 centerPosition, float width, float height, float rotatio
 
 void drawCircle(Circle* circle) {
     bool useColor = circle->texture ? NO_USE_COLOR : USE_COLOR;
-    drawCircle(circle->position, circle->radius, circle->rotation, circle->texture, imageShader, WHITE, useColor);
+    drawCircle(circle->position, circle->radius, circle->rotation, circle->texture, Shader::Shape, WHITE, useColor);
 }
 
 void drawCircle(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {

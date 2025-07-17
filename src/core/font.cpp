@@ -51,10 +51,10 @@ Font::Font(const char* path) {
 }
 
 void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec3 color, float rotation) {
-    glUseProgram(textShader);
+    glUseProgram(Shader::Text);
 
     // set color
-    GLuint colorLocation = glGetUniformLocation(textShader, "textColor");
+    GLuint colorLocation = glGetUniformLocation(Shader::Text, "textColor");
     glUniform3f(colorLocation, color.x, color.y, color.z);
 
     glEnable(GL_TEXTURE_2D);
@@ -69,7 +69,7 @@ void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec
         vec2 characterAdjustedSize = getCharacterSize(character, fontSize);
         vec2 characterAdjustedPosition = vec2(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
 
-        drawRectangle(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), textShader);
+        drawRectangle(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), Shader::Text);
         position.x += character.advance * scale;
     }
 

@@ -16,8 +16,8 @@ void init() {
       
     glPointSize(1.0); 
 
-    textShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
-    imageShader = initShaders("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
+    Shader::Text = Shader::init("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
+    Shader::Shape= Shader::init("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
 
     roboto = new Font("assets/Roboto.ttf");
 } 
