@@ -7,6 +7,9 @@ typedef glm::vec2 vec2;
 typedef glm::vec3 vec3;
 typedef glm::vec4 vec4;
 
+constexpr vec2 vec00 = vec2(0.f, 0.f);
+constexpr vec3 vec001 = vec3(0.f, 0.f, 1.f);
+
 inline vec3 vec2ToVec3(vec2 v, float z=0.f) {
     return vec3(v.x, v.y, z);
 }

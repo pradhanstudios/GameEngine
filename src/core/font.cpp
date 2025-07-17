@@ -69,7 +69,7 @@ void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec
         vec2 characterAdjustedSize = getCharacterSize(character, fontSize);
         vec2 characterAdjustedPosition = vec2(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
 
-        drawRectangleManual(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), textShader);
+        drawRectangle(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), textShader);
         position.x += character.advance * scale;
     }
 

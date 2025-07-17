@@ -6,5 +6,6 @@
 #include "font.hpp"
 #include "shaders.hpp"
 #include "draw.hpp"
+#include "collision.hpp"
 #include <chrono>
 #include <thread>

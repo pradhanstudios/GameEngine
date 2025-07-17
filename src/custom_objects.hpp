@@ -10,13 +10,13 @@ public:
         Circle(position, radius, 0.f, texture) {}
 
     void draw() override {
-        drawCircleManual(position, radius, DEG2RAD(90.f), texture, imageShader);
+        drawCircle(position, radius, DEG2RAD(90.f), texture, imageShader, WHITE, NO_USE_COLOR);
     }
 
     void update() override {
-        updateGravity();
+        applyGravity();
         applyCollisions(position, velocity, acceleration);
-        velocity += acceleration;
+        velocity += acceleration * ACCELERATION;
         position += velocity;
     }
 
@@ -29,9 +29,9 @@ class CollisionRectangle : public Rectangle, public WithGravity, public Collisio
 public:
     CollisionRectangle(float x, float y, float width, float height, Texture* texture=nullptr, float rotation=0.f) : Rectangle(x, y, width, height, rotation, texture) {}
     void update() override {
-        updateGravity();
+        applyGravity();
         applyCollisions(position, velocity, acceleration);
-        velocity += acceleration;
+        velocity += acceleration * ACCELERATION;
         position += velocity;
     }
 };
@@ -44,7 +44,7 @@ public:
     MyRectangle(vec2 position, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(position, width, height, DEG2RAD(10.f), texture), color(color) {}
 
     void draw() override {
-        drawRectangleManual(getCenter(), width, height, rotation, texture, imageShader, color, USE_COLOR);
+        drawRectangle(getCenter(), width, height, rotation, texture, imageShader, color, USE_COLOR);
     }
 };
 

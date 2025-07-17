@@ -36,9 +36,9 @@ inline int fps = 60;
 #define RIGHT_COLLISION 0b0001
 
 // Physics
-inline float gravity = 0.5f;
-inline float acceleration = 1.f;
-inline float friction = 1.f;
+inline float GRAVITY = 0.5f;
+inline float ACCELERATION = 1.5f;
+inline float FRICTION = 1.f;
 
 // Colors
 #define WHITE vec3(1.f, 1.f, 1.f)

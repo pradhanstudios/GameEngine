@@ -1,23 +1,6 @@
 #include "draw.hpp"
-
-void draw(Object* obj) {
-    if (Rectangle* rect = dynamic_cast<Rectangle*>(obj)) {
-        draw(*rect);
-    }
-
-    if (Circle* circle = dynamic_cast<Circle*>(obj)) {
-        draw(*circle);
-    }
-}
-
-void draw(Rectangle& rect) {
-    bool useColor = rect.texture ? NO_USE_COLOR : USE_COLOR;
-    drawRectangleManual(rect.getCenter(), rect.width, rect.height, rect.rotation, rect.texture, imageShader, WHITE, useColor);
-}
-
-void draw(Circle& circle) {
-    drawCircleManual(circle.position, circle.radius, circle.radius, circle.texture, imageShader);
-}
+#include "object.hpp"
+#include "shape.hpp"
 
 void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, GLuint VAO, GLsizei vertexCount, GLuint shader, GLenum primitiveType, GLenum textureUnit, bool useElements, GLuint textureID, vec3 color, bool useColor) {
     glUseProgram(shader);
@@ -68,7 +51,12 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
     glUseProgram(0);
 }
 
-void drawRectangleManual(vec2 centerPosition, float width, float height, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
+void drawRectangle(Rectangle* rect) {
+    bool useColor = rect->texture ? NO_USE_COLOR : USE_COLOR;
+    drawRectangle(rect->getCenter(), rect->width, rect->height, rect->rotation, rect->texture, imageShader, WHITE, useColor);
+}
+
+void drawRectangle(vec2 centerPosition, float width, float height, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
     // SETUP (move to initialization of start of program later)
     unsigned int indices[] = {0, 1, 2, 0, 2, 3};
 
@@ -120,7 +108,12 @@ void drawRectangleManual(vec2 centerPosition, float width, float height, float r
     glDeleteBuffers(1, &EBO);
 }
 
-void drawCircleManual(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
+void drawCircle(Circle* circle) {
+    bool useColor = circle->texture ? NO_USE_COLOR : USE_COLOR;
+    drawCircle(circle->position, circle->radius, circle->rotation, circle->texture, imageShader, WHITE, useColor);
+}
+
+void drawCircle(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
     // SETUP VERTICES
     float vertices[(TRIANGLE_COUNT_CIRCLE + 2) * 4];
     int vertexIDX = 0;
@@ -179,7 +172,7 @@ void drawCircleManual(vec2 position, float radius, float rotation, Texture* text
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
     // This is the thing it is masking
-    drawRectangleManual(vec2(position.x - radius, position.y - radius), radius * 4, radius * 4, rotation, texture, shader, color, useColor);
+    drawRectangle(vec2(position.x - radius, position.y - radius), radius * 4, radius * 4, rotation, texture, shader, color, useColor);
 
     glDisable(GL_STENCIL_TEST);
     glDeleteVertexArrays(1, &VAO);
