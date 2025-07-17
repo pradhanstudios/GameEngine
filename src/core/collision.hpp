@@ -3,8 +3,10 @@
 
 #include "constants.hpp"
 #include "vector.hpp"
-#include "object.hpp"
-#include "shape.hpp"
+
+class Object;
+class Circle;
+class Rectangle;
 
 struct CollisionInfo {
     vec2 normal;
@@ -42,9 +44,7 @@ public:
         info = CollisionInfo();    
     }
 
-    inline void setCollision(Object& object, Object& other) {
-        info += object.getCollision(other);
-    }
+    void setCollision(Object* object, Object* other);
 
     virtual void applyCollisions(vec2& position, vec2& velocity, vec2& acceleration);
 };

@@ -1,4 +1,6 @@
 #include "collision.hpp"
+#include "object.hpp"
+#include "shape.hpp"
 
 struct Projection {
     float min, max;
@@ -19,7 +21,7 @@ std::array<vec2, 4> getTransformedVertices(Rectangle* rect) {
     // Build transformation matrix for world space
     glm::mat4 transform = glm::mat4(1.0f);
     transform = glm::translate(transform, vec2ToVec3(rect->getCenter())); // Translate to center
-    transform = glm::rotate(transform, rotation, glm::vec3(0.0f, 0.0f, 1.0f)); // Apply rotation
+    transform = glm::rotate(transform, rect->rotation, glm::vec3(0.0f, 0.0f, 1.0f)); // Apply rotation
 
     // Transform each local corner to world space
     for (int i = 0; i < 4; ++i) {
@@ -125,7 +127,7 @@ CollisionInfo colliding(Rectangle* rect, Circle* circle) {
     CollisionInfo info;
     vec2 circleCenterWorld = circle->position;
     vec2 rectCenterWorld = rect->getCenter();
-    glm::mat4 rectWorldTransform = glm::translate(glm::mat4(1.f), vec2ToVec3(rectCenterWorld)) * glm::rotate(glm::mat4(1.f), rotation, vec001);
+    glm::mat4 rectWorldTransform = glm::translate(glm::mat4(1.f), vec2ToVec3(rectCenterWorld)) * glm::rotate(glm::mat4(1.f), rect->rotation, vec001);
 
     // Create an inverse transform
     glm::mat4 inverseTransform = glm::inverse(rectWorldTransform);
@@ -155,7 +157,7 @@ CollisionInfo colliding(Rectangle* rect, Circle* circle) {
             info.normal = vec2(0.f, 1.f);
         }
 
-        float overlap = other->radius - distance;
+        float overlap = circle->radius - distance;
         info.mtv = info.normal * overlap;
     }
 
@@ -183,44 +185,48 @@ CollisionInfo colliding(Circle* circle, Rectangle* rect) {
     return colliding(rect, circle);
 }
 
-virtual void Collision::applyCollisions(vec2& position, vec2& velocity, vec2& acceleration) {
-        if (!info.collision) {
-            return;
-        } 
-        
-        position += info.mtv;
-        float velocityDotNormal = glm::dot(velocity, info.normal);
+void Collision::setCollision(Object* object, Object* other) {
+    info += object->collision(other); 
+}
 
-        if (velocityDotNormal < 0.f) {
-            vec2 normalVelocityComponent = info.normal * velocityDotNormal;
-            vec2 tangentialVelocityComponent = velocity - normalVelocityComponent;
-            const float bounce = 0.f;
-            normalVelocityComponent = -normalVelocityComponent * bounce; 
-            tangentialVelocityComponent *= (1.f - friction);
-            velocity = normalVelocityComponent + tangentialVelocityComponent;
+void Collision::applyCollisions(vec2& position, vec2& velocity, vec2& acceleration) {
+    if (!info.collision) {
+        return;
+    } 
+    
+    position += info.mtv;
+    float velocityDotNormal = glm::dot(velocity, info.normal);
+
+    if (velocityDotNormal < 0.f) {
+        vec2 normalVelocityComponent = info.normal * velocityDotNormal;
+        vec2 tangentialVelocityComponent = velocity - normalVelocityComponent;
+        const float bounce = 0.f;
+        normalVelocityComponent = -normalVelocityComponent * bounce; 
+        tangentialVelocityComponent *= (1.f - FRICTION);
+        velocity = normalVelocityComponent + tangentialVelocityComponent;
+    }
+
+    // float accelerationDotNormal = glm::dot(acceleration, info.normal);
+
+    // Later implement more advanced accleration system
+    if (glm::dot(info.normal, vec2(0.0f, 1.0f)) > 0.7f) { // Normal is pointing mostly upwards (like a floor)
+        if (acceleration.y < 0) { 
+            acceleration.y = 0; 
         }
 
-        // float accelerationDotNormal = glm::dot(acceleration, info.normal);
-
-        // Later implement more advanced accleration system
-        if (glm::dot(info.normal, vec2(0.0f, 1.0f)) > 0.7f) { // Normal is pointing mostly upwards (like a floor)
-            if (acceleration.y < 0) { 
-                acceleration.y = 0; 
-            }
-
-            // If the object's vertical velocity is very small after collision,
-            if (glm::abs(velocity.y) < 0.1f) { // Threshold for "stopped vertically"
-                velocity.y = 0;
-            }
-        }
-
-        if (glm::dot(info.normal, vec2(0.0f, -1.0f)) > 0.7f) {
-            if (acceleration.y > 0) { // If acceleration is pulling upwards (e.g. anti-gravity)
-                acceleration.y = 0;
-            }
-
-            if (glm::abs(velocity.y) < 0.1f) {
-                velocity.y = 0;
-            }
+        // If the object's vertical velocity is very small after collision,
+        if (glm::abs(velocity.y) < 0.1f) { // Threshold for "stopped vertically"
+            velocity.y = 0;
         }
     }
+
+    if (glm::dot(info.normal, vec2(0.0f, -1.0f)) > 0.7f) {
+        if (acceleration.y > 0) { // If acceleration is pulling upwards (e.g. anti-gravity)
+            acceleration.y = 0;
+        }
+
+        if (glm::abs(velocity.y) < 0.1f) {
+            velocity.y = 0;
+        }
+    }
+}
