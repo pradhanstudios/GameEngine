@@ -19,7 +19,10 @@ void init() {
     shader::text = shader::init("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
     shader::shape= shader::init("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
 
-    font::roboto = new Font("assets/Roboto.ttf");
+    font::roboto = new font::Font("assets/Roboto.ttf");
+
+    vao::rectangle = vao::createRectangleVao();
+    vao::circle = vao::createCircleVao();
 } 
  
 void mainloop() {
