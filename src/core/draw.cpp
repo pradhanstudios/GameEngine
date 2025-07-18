@@ -2,12 +2,13 @@
 #include "object.hpp"
 #include "shape.hpp"
 
-void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, GLuint VAO, GLsizei vertexCount, GLuint shader, GLenum primitiveType, GLenum textureUnit, bool useElements, GLuint textureID, vec3 color, bool useColor) {
-    glUseProgram(shader);
+void bindToShader(GLuint shader, const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const vao::Vao& vao, float scaleX, float scaleY, GLenum textureUnit, GLuint textureID, vec3 color, bool useColor) {
+    GLint scaleLoc = glGetUniformLocation(shader, "scale");
     GLint modelLoc = glGetUniformLocation(shader, "model");
     GLint viewLoc = glGetUniformLocation(shader, "view");
     GLint projLoc = glGetUniformLocation(shader, "projection");
 
+    glUniform2f(scaleLoc, scaleX, scaleY);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -30,25 +31,24 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
         GLuint useTextureLocation = glGetUniformLocation(shader, "useTexture");
         glUniform1i(useTextureLocation, 0);
     }
-    
+
     // BLENDING
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // DRAW
-    glBindVertexArray(VAO);
-
-    if (useElements) {
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    }
-
-    else {
-        glDrawArrays(primitiveType, 0, vertexCount);
-    }
-
-    // CLEANUP
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glUseProgram(0);
+    //
+    vao.bind();
+    //
+    // if (useElements) {
+    //     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // }
+    //
+    // else {
+    //     glDrawArrays(primitiveType, 0, vertexCount);
+    // }
+    //
+    // // CLEANUP
+    // glBindTexture(GL_TEXTURE_2D, 0);
+    // glUseProgram(0);
 }
 
 void drawRectangle(Rectangle* rect) {
@@ -57,55 +57,28 @@ void drawRectangle(Rectangle* rect) {
 }
 
 void drawRectangle(vec2 centerPosition, float width, float height, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
-    // SETUP (move to initialization of start of program later)
-    unsigned int indices[] = {0, 1, 2, 0, 2, 3};
-
-    float vertices[] = {
-        -0.5, -0.5, 0.f, 0.f, // bottom left
-        0.5, -0.5, 1.f, 0.f, // bottom right
-        0.5, 0.5, 1.f, 1.f, // top right
-        -0.5, 0.5, 0.f, 1.f, // top left
-    };
-
-    GLuint VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // unbinding since we're using them later 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // SET UP GLM STUFF
+    // Setup model 
     glm::mat4 model(1.f);
 
     model = glm::translate(model, vec2ToVec3(centerPosition));
     model = glm::rotate(model, rotation, vec3(0.f, 0.f, 1.f));
-    model = glm::scale(model, glm::vec3(width, height, 1.0f));
+    // model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
     glm::mat4 projection = glm::ortho(0.f, float(display::width), float(display::height), 0.f, -1.f, 1.f);
     glm::mat4 view(1.f);
 
-    // DRAW
-    GLuint textureToSend = (texture ? texture->textureID : 0);
-    // useColor = useColor || (textureToSend == 0);
-    _drawShape(model, view, projection, VAO, 6, shader, GL_TRIANGLES, GL_TEXTURE0, true, textureToSend, color, useColor);
+    // Setup drawing
+    glUseProgram(shader);
+    GLuint textureToBind = (texture ? texture->textureID : 0);
+    bindToShader(shader, model, view, projection, vao::rectangle, width, height, GL_TEXTURE0, textureToBind, color, useColor);
 
-    glBindVertexArray(0);
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    // draw
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // cleanup
+    glBindTexture(GL_TEXTURE_2D, 0);
+    vao::rectangle.unbind();
+    glUseProgram(0);
 }
 
 void drawCircle(Circle* circle) {
@@ -114,41 +87,6 @@ void drawCircle(Circle* circle) {
 }
 
 void drawCircle(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
-    // SETUP VERTICES
-    float vertices[(display::_triangleCountCircle + 2) * 4];
-    int vertexIDX = 0;
-    // Start at (0, 0) and work from there
-    vertices[vertexIDX++] = 0.f; // x 
-    vertices[vertexIDX++] = 0.f; // y 
-    vertices[vertexIDX++] = 0.f; // dummy u 
-    vertices[vertexIDX++] = 0.f; // dummy v 
-
-    for (int i = 0; i <= display::_triangleCountCircle; i++) {
-        float angle = i * math::tau / display::_triangleCountCircle;
-        vertices[vertexIDX++] = radius * cos(angle); // x 
-        vertices[vertexIDX++] = radius * sin(angle); // y 
-        vertices[vertexIDX++] = 0.f; // dummy u 
-        vertices[vertexIDX++] = 0.f; // dummy v 
-    }    
-
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Position attribute (layout location 0 in shader)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // Texture coordinate attribute (layout location 1 in shader - even if dummy for stencil)
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0); // Unbind VAO
-    glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind VBO
-    
     // STENCIL
     glEnable(GL_STENCIL_TEST);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -162,19 +100,22 @@ void drawCircle(vec2 position, float radius, float rotation, Texture* texture, G
     glm::mat4 projection = glm::ortho(0.f, float(display::width), float(display::height), 0.f, -1.f, 1.f);
     glm::mat4 view(1.f);
 
-    GLuint textureToSend = (texture ? texture->textureID : 0);
-    // useColor = useColor || (textureToSend == 0);
+    GLuint textureToBind = (texture ? texture->textureID : 0);
     // This is the mask
-    _drawShape(model, view, projection, VAO, (display::_triangleCountCircle + 2), shader, GL_TRIANGLE_FAN, GL_TEXTURE0, false, textureToSend, color, useColor); 
+    glUseProgram(shader);
+    bindToShader(shader, model, view, projection, vao::circle, radius, radius, GL_TEXTURE0, textureToBind, color, useColor); 
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, display::_triangleCountCircle + 2);
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glStencilFunc(GL_EQUAL, 1, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
     // This is the thing it is masking
-    drawRectangle(vec2(position.x - radius, position.y - radius), radius * 4, radius * 4, rotation, texture, shader, color, useColor);
+    drawRectangle(position, radius * 2, radius * 2, rotation, texture, shader, color, useColor);
 
+    // Cleanup
+    glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_STENCIL_TEST);
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glUseProgram(shader);
 }
