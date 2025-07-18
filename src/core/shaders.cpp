@@ -1,8 +1,8 @@
 #include "shaders.hpp"
 
-namespace Shader {
-GLuint Text = 0;
-GLuint Shape = 0;
+namespace shader {
+GLuint text = 0;
+GLuint shape = 0;
 
 char* _read(const char* filename) {
     char* content;

@@ -10,13 +10,13 @@ public:
         Circle(position, radius, 0.f, texture) {}
 
     void draw() override {
-        drawCircle(position, radius, DEG2RAD(90.f), texture, Shader::Shape, Color::White, Color::NoUse);
+        drawCircle(position, radius, DEG2RAD(90.f), texture, shader::shape, color::white, color::noUse);
     }
 
     void update() override {
         applyGravity();
         applyCollisions(position, velocity, acceleration);
-        velocity += acceleration * Physics::Acceleration;
+        velocity += acceleration * physics::acceleration;
         position += velocity;
     }
 
@@ -31,7 +31,7 @@ public:
     void update() override {
         applyGravity();
         applyCollisions(position, velocity, acceleration);
-        velocity += acceleration * Physics::Acceleration;
+        velocity += acceleration * physics::acceleration;
         position += velocity;
     }
 };
@@ -44,7 +44,7 @@ public:
     MyRectangle(vec2 position, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(position, width, height, DEG2RAD(10.f), texture), color(color) {}
 
     void draw() override {
-        drawRectangle(getCenter(), width, height, rotation, texture, Shader::Shape, color, Color::Use);
+        drawRectangle(getCenter(), width, height, rotation, texture, shader::shape, color, color::use);
     }
 };
 

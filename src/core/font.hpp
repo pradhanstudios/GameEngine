@@ -19,7 +19,7 @@ private:
     Character characters[95];
 public:
     Font(const char* path);
-    void renderSentence(const char* sentence, int fontSize, vec2 position, vec3 color=Color::White, float rotation=0.f);
+    void renderSentence(const char* sentence, int fontSize, vec2 position, vec3 color=color::white, float rotation=0.f);
 
     inline vec2 getCharacterSize(Character character, int fontSize=48) {
         float scale = fontSize / 48.f;

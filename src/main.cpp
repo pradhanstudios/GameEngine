@@ -16,13 +16,13 @@ void init() {
       
     glPointSize(1.0); 
 
-    Shader::Text = Shader::init("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
-    Shader::Shape= Shader::init("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
+    shader::text = shader::init("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
+    shader::shape= shader::init("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
 
     roboto = new Font("assets/Roboto.ttf");
 } 
  
-void display() {
+void mainloop() {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
     for (size_t i = 0; i < objects.size(); i++) {
         if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
@@ -40,10 +40,10 @@ void display() {
         objects[i]->draw();
     }
  
-    roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), Color::Green);
+    roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::green);
 
     glutSwapBuffers();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / Display::Fps));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / display::fps));
     glutPostRedisplay();
 } 
  
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_STENCIL | GLUT_DEPTH); 
       
     // giving window size in X- and Y- directon 
-    glutInitWindowSize(Display::Width, Display::Height); 
+    glutInitWindowSize(display::width, display::height); 
     glutInitWindowPosition(0, 0); 
     glutCreateWindow("Game Engine Core Testing"); 
 
@@ -61,15 +61,15 @@ int main(int argc, char** argv) {
 
     Texture* rickroll = new Texture(loadBMPTexture("assets/rickroll.bmp"));
 
-    objects.push_back(std::make_unique<MyCircle>(MyCircle(Display::Width / 3, 0, 50, rickroll)));
-    objects[0]->setCenterY(Display::Height / 2 - 300);
-    objects.push_back(std::make_unique<CollisionRectangle>(CollisionRectangle(Display::Width / 3 * 2, 0, 200, 100, rickroll, DEG2RAD(45.f))));
+    objects.push_back(std::make_unique<MyCircle>(MyCircle(display::width / 3, 0, 50, rickroll)));
+    objects[0]->setCenterY(display::height / 2 - 300);
+    objects.push_back(std::make_unique<CollisionRectangle>(CollisionRectangle(display::width / 3 * 2, 0, 200, 100, rickroll, DEG2RAD(45.f))));
     objects[1]->setCenterY(0);
-    objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, Display::Height - 50, Display::Width, 50, Color::Red)));
-    objects[2]->setCenterX(Display::Width / 2);
-    objects[2]->setCenterY(Display::Height - 200);
+    objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, display::height - 50, display::width, 50, color::red)));
+    objects[2]->setCenterX(display::width / 2);
+    objects[2]->setCenterY(display::height - 200);
      
-    glutDisplayFunc(display); 
+    glutDisplayFunc(mainloop); 
     glutMainLoop(); 
 
     delete roboto;

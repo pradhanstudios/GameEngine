@@ -14,43 +14,43 @@
 #include <memory>
 #include <cstring>
  
-namespace Display {
-inline int Width = 1280;
-inline int Height = 720;
-inline int _TriangleCountCircle = 20;
-inline int Fps = 60;
+namespace display {
+inline int width = 1280;
+inline int height = 720;
+inline int _triangleCountCircle = 20;
+inline int fps = 60;
 }
 
-namespace Math {
-constexpr float Pi = 3.142857; 
-constexpr float Tau = 6.283185f;
-constexpr float Epsilon = 0.0001f;
+namespace math {
+constexpr float pi = 3.142857; 
+constexpr float tau = 6.283185f;
+constexpr float epsilon = 0.0001f;
 }
-#define DEG2RAD(x) (x * (Math::Pi/180))
+#define DEG2RAD(x) (x * (math::pi/180))
 
 // Type aliases
 #define ObjectList std::vector<std::unique_ptr<Object>>
 
-namespace Physics {
-inline float Gravity = 0.5f;
-inline float Acceleration = 1.5f;
-inline float Friction = 1.f;
+namespace physics {
+inline float gravity = 0.5f;
+inline float acceleration = 1.5f;
+inline float friction = 1.f;
 }
 
-namespace Color {
-constexpr glm::vec3 White = glm::vec3(1.f, 1.f, 1.f);
-constexpr glm::vec3 Black = glm::vec3(0.f, 0.f, 0.f);
-constexpr glm::vec3 Red = glm::vec3(1.f, 0.f, 0.f);
-constexpr glm::vec3 Green = glm::vec3(0.f, 1.f, 0.f);
-constexpr glm::vec3 Blue = glm::vec3(0.f, 0.f, 1.f);
-constexpr glm::vec3 Yellow = glm::vec3(1.f, 1.f, 0.f);
-constexpr glm::vec3 Cyan = glm::vec3(0.f, 1.f, 1.f);
-constexpr glm::vec3 Magenta = glm::vec3(1.f, 0.f, 1.f);
-constexpr glm::vec3 Orange = glm::vec3(1.f, 0.5f, 0.f);
-constexpr glm::vec3 Purple = glm::vec3(0.5f, 0.f, 1.f);
-constexpr glm::vec3 Pink = glm::vec3(1.f, 0.5f, 0.5f);
-constexpr glm::vec3 Brown = glm::vec3(0.5f, 0.25f, 0.f);
-constexpr bool Use = true;
-constexpr bool NoUse = false;
+namespace color {
+constexpr glm::vec3 white = glm::vec3(1.f, 1.f, 1.f);
+constexpr glm::vec3 black = glm::vec3(0.f, 0.f, 0.f);
+constexpr glm::vec3 red = glm::vec3(1.f, 0.f, 0.f);
+constexpr glm::vec3 green = glm::vec3(0.f, 1.f, 0.f);
+constexpr glm::vec3 blue = glm::vec3(0.f, 0.f, 1.f);
+constexpr glm::vec3 yellow = glm::vec3(1.f, 1.f, 0.f);
+constexpr glm::vec3 cyan = glm::vec3(0.f, 1.f, 1.f);
+constexpr glm::vec3 magenta = glm::vec3(1.f, 0.f, 1.f);
+constexpr glm::vec3 orange = glm::vec3(1.f, 0.5f, 0.f);
+constexpr glm::vec3 purple = glm::vec3(0.5f, 0.f, 1.f);
+constexpr glm::vec3 pink = glm::vec3(1.f, 0.5f, 0.5f);
+constexpr glm::vec3 brown = glm::vec3(0.5f, 0.25f, 0.f);
+constexpr bool use = true;
+constexpr bool noUse = false;
 }
 #endif // CONSTANTS_HPP
