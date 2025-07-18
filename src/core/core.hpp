@@ -1,4 +1,5 @@
 #include "constants.hpp"
+#include "vao.hpp"
 #include "vector.hpp"
 #include "object.hpp"
 #include "shape.hpp"

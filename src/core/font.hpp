@@ -14,7 +14,6 @@ public:
     int bearingX, bearingY, advance;
     Character(GLuint textureID=0, int width=0, int height=0, int bearingX=0, int bearingY=0, int advance=0) : Texture(textureID, width, height), bearingX(bearingX), bearingY(bearingY), advance(advance) {}   
 };
-}
 
 struct Font {
 private:
@@ -37,7 +36,6 @@ public:
     }
 };
 
-namespace font {
 inline Font* roboto;
 }
 
