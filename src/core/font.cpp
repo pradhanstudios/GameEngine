@@ -1,5 +1,6 @@
 #include "font.hpp" 
 
+namespace font {
 Font::Font(const char* path) {
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
@@ -77,4 +78,5 @@ void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
     glUseProgram(0);
+}
 }
