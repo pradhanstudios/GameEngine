@@ -32,23 +32,9 @@ void bindToShader(GLuint shader, const glm::mat4& model, const glm::mat4& view, 
         glUniform1i(useTextureLocation, 0);
     }
 
-    // BLENDING
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //
     vao.bind();
-    //
-    // if (useElements) {
-    //     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    // }
-    //
-    // else {
-    //     glDrawArrays(primitiveType, 0, vertexCount);
-    // }
-    //
-    // // CLEANUP
-    // glBindTexture(GL_TEXTURE_2D, 0);
-    // glUseProgram(0);
 }
 
 void drawRectangle(Rectangle* rect) {
@@ -62,7 +48,6 @@ void drawRectangle(vec2 centerPosition, float width, float height, float rotatio
 
     model = glm::translate(model, vec2ToVec3(centerPosition));
     model = glm::rotate(model, rotation, vec3(0.f, 0.f, 1.f));
-    // model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
     glm::mat4 projection = glm::ortho(0.f, float(display::width), float(display::height), 0.f, -1.f, 1.f);
     glm::mat4 view(1.f);
@@ -87,13 +72,13 @@ void drawCircle(Circle* circle) {
 }
 
 void drawCircle(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
-    // STENCIL
+    // Stencil
     glEnable(GL_STENCIL_TEST);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     
-    // make a model for the stencil
+    // Make a model for the stencil
     glm::mat4 model(1.f);
     model = glm::translate(model, vec2ToVec3(position));
 
@@ -101,7 +86,6 @@ void drawCircle(vec2 position, float radius, float rotation, Texture* texture, G
     glm::mat4 view(1.f);
 
     GLuint textureToBind = (texture ? texture->textureID : 0);
-    // This is the mask
     glUseProgram(shader);
     bindToShader(shader, model, view, projection, vao::circle, radius, radius, GL_TEXTURE0, textureToBind, color, useColor); 
 
