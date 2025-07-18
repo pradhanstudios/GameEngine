@@ -52,8 +52,8 @@ void _drawShape(const glm::mat4& model, const glm::mat4& view, const glm::mat4& 
 }
 
 void drawRectangle(Rectangle* rect) {
-    bool useColor = rect->texture ? NO_USE_COLOR : USE_COLOR;
-    drawRectangle(rect->getCenter(), rect->width, rect->height, rect->rotation, rect->texture, imageShader, WHITE, useColor);
+    bool useColor = rect->texture ? color::noUse : color::use;
+    drawRectangle(rect->getCenter(), rect->width, rect->height, rect->rotation, rect->texture, shader::shape, color::white, useColor);
 }
 
 void drawRectangle(vec2 centerPosition, float width, float height, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
@@ -94,7 +94,7 @@ void drawRectangle(vec2 centerPosition, float width, float height, float rotatio
     model = glm::rotate(model, rotation, vec3(0.f, 0.f, 1.f));
     model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
-    glm::mat4 projection = glm::ortho(0.f, float(RESOLUTION_WIDTH), float(RESOLUTION_HEIGHT), 0.f, -1.f, 1.f);
+    glm::mat4 projection = glm::ortho(0.f, float(display::width), float(display::height), 0.f, -1.f, 1.f);
     glm::mat4 view(1.f);
 
     // DRAW
@@ -109,13 +109,13 @@ void drawRectangle(vec2 centerPosition, float width, float height, float rotatio
 }
 
 void drawCircle(Circle* circle) {
-    bool useColor = circle->texture ? NO_USE_COLOR : USE_COLOR;
-    drawCircle(circle->position, circle->radius, circle->rotation, circle->texture, imageShader, WHITE, useColor);
+    bool useColor = circle->texture ? color::noUse : color::use;
+    drawCircle(circle->position, circle->radius, circle->rotation, circle->texture, shader::shape, color::white, useColor);
 }
 
 void drawCircle(vec2 position, float radius, float rotation, Texture* texture, GLuint shader, vec3 color, bool useColor) {
     // SETUP VERTICES
-    float vertices[(TRIANGLE_COUNT_CIRCLE + 2) * 4];
+    float vertices[(display::_triangleCountCircle + 2) * 4];
     int vertexIDX = 0;
     // Start at (0, 0) and work from there
     vertices[vertexIDX++] = 0.f; // x 
@@ -123,8 +123,8 @@ void drawCircle(vec2 position, float radius, float rotation, Texture* texture, G
     vertices[vertexIDX++] = 0.f; // dummy u 
     vertices[vertexIDX++] = 0.f; // dummy v 
 
-    for (int i = 0; i <= TRIANGLE_COUNT_CIRCLE; i++) {
-        float angle = i * tau / TRIANGLE_COUNT_CIRCLE;
+    for (int i = 0; i <= display::_triangleCountCircle; i++) {
+        float angle = i * math::tau / display::_triangleCountCircle;
         vertices[vertexIDX++] = radius * cos(angle); // x 
         vertices[vertexIDX++] = radius * sin(angle); // y 
         vertices[vertexIDX++] = 0.f; // dummy u 
@@ -159,13 +159,13 @@ void drawCircle(vec2 position, float radius, float rotation, Texture* texture, G
     glm::mat4 model(1.f);
     model = glm::translate(model, vec2ToVec3(position));
 
-    glm::mat4 projection = glm::ortho(0.f, float(RESOLUTION_WIDTH), float(RESOLUTION_HEIGHT), 0.f, -1.f, 1.f);
+    glm::mat4 projection = glm::ortho(0.f, float(display::width), float(display::height), 0.f, -1.f, 1.f);
     glm::mat4 view(1.f);
 
     GLuint textureToSend = (texture ? texture->textureID : 0);
     // useColor = useColor || (textureToSend == 0);
     // This is the mask
-    _drawShape(model, view, projection, VAO, (TRIANGLE_COUNT_CIRCLE + 2), shader, GL_TRIANGLE_FAN, GL_TEXTURE0, false, textureToSend, color, useColor); 
+    _drawShape(model, view, projection, VAO, (display::_triangleCountCircle + 2), shader, GL_TRIANGLE_FAN, GL_TEXTURE0, false, textureToSend, color, useColor); 
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glStencilFunc(GL_EQUAL, 1, 0xFF);

@@ -22,7 +22,7 @@ Font::Font(const char* path) {
             continue;
         }
 
-        Character character = Character(0, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap_left, face->glyph->bitmap_top, face->glyph->advance.x >> 6);
+        font::Character character = font::Character(0, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap_left, face->glyph->bitmap_top, face->glyph->advance.x >> 6);
         glGenTextures(1, &character.textureID);
         glBindTexture(GL_TEXTURE_2D, character.textureID);
         glTexImage2D(
@@ -51,10 +51,10 @@ Font::Font(const char* path) {
 }
 
 void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec3 color, float rotation) {
-    glUseProgram(textShader);
+    glUseProgram(shader::text);
 
     // set color
-    GLuint colorLocation = glGetUniformLocation(textShader, "textColor");
+    GLuint colorLocation = glGetUniformLocation(shader::text, "textColor");
     glUniform3f(colorLocation, color.x, color.y, color.z);
 
     glEnable(GL_TEXTURE_2D);
@@ -63,13 +63,13 @@ void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec
 
     for (int i = 0; *(sentence + i) != '\0'; i++) {
         char c = *(sentence + i);
-        Character character = getCharacter(c);
+        font::Character character = getCharacter(c);
 
         float scale = fontSize / 48.f;
         vec2 characterAdjustedSize = getCharacterSize(character, fontSize);
         vec2 characterAdjustedPosition = vec2(position.x + character.bearingX * scale, (position.y + fontSize) - character.bearingY * scale);
 
-        drawRectangle(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), textShader);
+        drawRectangle(characterAdjustedPosition + characterAdjustedSize * 0.5f, characterAdjustedSize.x, characterAdjustedSize.y, rotation, static_cast<Texture*>(&character), shader::text);
         position.x += character.advance * scale;
     }
 

@@ -202,7 +202,7 @@ void Collision::applyCollisions(vec2& position, vec2& velocity, vec2& accelerati
         vec2 tangentialVelocityComponent = velocity - normalVelocityComponent;
         const float bounce = 0.f;
         normalVelocityComponent = -normalVelocityComponent * bounce; 
-        tangentialVelocityComponent *= (1.f - FRICTION);
+        tangentialVelocityComponent *= (1.f - physics::friction);
         velocity = normalVelocityComponent + tangentialVelocityComponent;
     }
 
