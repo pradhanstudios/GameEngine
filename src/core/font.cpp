@@ -22,7 +22,7 @@ Font::Font(const char* path) {
             continue;
         }
 
-        Character character = Character(0, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap_left, face->glyph->bitmap_top, face->glyph->advance.x >> 6);
+        font::Character character = font::Character(0, face->glyph->bitmap.width, face->glyph->bitmap.rows, face->glyph->bitmap_left, face->glyph->bitmap_top, face->glyph->advance.x >> 6);
         glGenTextures(1, &character.textureID);
         glBindTexture(GL_TEXTURE_2D, character.textureID);
         glTexImage2D(
@@ -63,7 +63,7 @@ void Font::renderSentence(const char* sentence, int fontSize, vec2 position, vec
 
     for (int i = 0; *(sentence + i) != '\0'; i++) {
         char c = *(sentence + i);
-        Character character = getCharacter(c);
+        font::Character character = getCharacter(c);
 
         float scale = fontSize / 48.f;
         vec2 characterAdjustedSize = getCharacterSize(character, fontSize);

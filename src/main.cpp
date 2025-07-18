@@ -19,7 +19,7 @@ void init() {
     shader::text = shader::init("src/core/shaders/shader.vert", "src/core/shaders/text.frag");
     shader::shape= shader::init("src/core/shaders/shader.vert", "src/core/shaders/image.frag");
 
-    roboto = new Font("assets/Roboto.ttf");
+    font::roboto = new Font("assets/Roboto.ttf");
 } 
  
 void mainloop() {
@@ -40,7 +40,7 @@ void mainloop() {
         objects[i]->draw();
     }
  
-    roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::green);
+    font::roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::green);
 
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / display::fps));
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(mainloop); 
     glutMainLoop(); 
 
-    delete roboto;
+    delete font::roboto;
     delete rickroll;
     
     return 0;
