@@ -101,5 +101,5 @@ void drawCircle(vec2 position, float radius, float rotation, Texture* texture, G
     // Cleanup
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_STENCIL_TEST);
-    glUseProgram(shader);
+    glUseProgram(0);
 }
