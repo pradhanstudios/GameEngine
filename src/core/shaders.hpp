@@ -1,6 +1,7 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 #include "constants.hpp"
+
 namespace shader {
 char* _read(const char* filename);
 GLuint _create(const char* vertexShader, const char* fragShader);
@@ -13,11 +14,11 @@ public:
         this->id = _create(vertexShader, fragShader);
     }
 
-    inline bool operator==(Shader& other) {
+    inline bool operator==(Shader& other) const {
         return id == other.getID();
     }
 
-    inline bool operator!=(Shader& other) {
+    inline bool operator!=(Shader& other) const {
         return !operator==(other);
     }
 
@@ -43,8 +44,12 @@ public:
         return glGetUniformLocation(id, parameter);
     }
 
-    inline void set(const char* parameter, bool v) {
+    inline void set(const char* parameter, int v) {
         glUniform1i(getLocation(parameter), v);
+    }
+
+    inline void set(const char* parameter, float v) {
+        glUniform1f(getLocation(parameter), v);
     }
 
     inline void set(const char* parameter, float v1, float v2) {
@@ -57,7 +62,7 @@ public:
         glUniform4f(getLocation(parameter), v1, v2, v3, v4);
     }
 
-    inline void setm4(const char* parameter, float* matrix, GLsizei count = 1, GLboolean transpose = GL_FALSE) {
+    inline void setm4(const char* parameter, const float* matrix, GLsizei count = 1, GLboolean transpose = GL_FALSE) {
         glUniformMatrix4fv(getLocation(parameter), count, transpose, matrix);
     }
 };
