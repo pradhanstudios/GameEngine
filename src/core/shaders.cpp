@@ -1,8 +1,8 @@
 #include "shaders.hpp"
 
 namespace shader {
-GLuint text = 0;
-GLuint shape = 0;
+Shader text = Shader();
+Shader shape = Shader();
 
 char* _read(const char* filename) {
     char* content;
@@ -32,7 +32,7 @@ char* _read(const char* filename) {
     return content;
 }
 
-GLuint init(const char* vertShader, const char* fragShader) {
+GLuint _create(const char* vertShader, const char* fragShader) {
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
