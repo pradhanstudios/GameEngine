@@ -43,7 +43,7 @@ void mainloop() {
         objects[i]->draw();
     }
  
-    font::roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::green);
+    font::roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::blue);
 
     glutSwapBuffers();
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / display::fps));
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 
     objects.push_back(std::make_unique<MyCircle>(MyCircle(display::width / 3, 0, 50, rickroll)));
     objects[0]->setCenterY(display::height / 2 - 300);
-    objects.push_back(std::make_unique<CollisionRectangle>(CollisionRectangle(display::width / 3 * 2, 0, 200, 100, rickroll, DEG2RAD(45.f))));
+    objects.push_back(std::make_unique<CollisionRectangle>(CollisionRectangle(display::width / 3 * 2, 0, 200, 100, rickroll, glm::radians(45.f))));
     objects[1]->setCenterY(0);
     objects.push_back(std::make_unique<MyRectangle>(MyRectangle(0, display::height - 50, display::width, 50, color::red)));
     objects[2]->setCenterX(display::width / 2);

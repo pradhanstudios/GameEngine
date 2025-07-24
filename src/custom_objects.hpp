@@ -10,7 +10,7 @@ public:
         Circle(position, radius, 0.f, texture) {}
 
     void draw() override {
-        drawCircle(position, radius, DEG2RAD(90.f), texture, shader::shape, color::white, color::noUse);
+        drawCircle(position, radius, glm::radians(90.f), texture, shader::shape, color::white, color::noUse);
     }
 
     void update() override {
@@ -40,8 +40,8 @@ class MyRectangle : public Rectangle {
 public:
     vec3 color;
     
-    MyRectangle(float x, float y, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, DEG2RAD(10.f), texture), color(color) {}
-    MyRectangle(vec2 position, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(position, width, height, DEG2RAD(10.f), texture), color(color) {}
+    MyRectangle(float x, float y, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(x, y, width, height, glm::radians(10.f), texture), color(color) {}
+    MyRectangle(vec2 position, float width, float height, vec3 color, Texture* texture=nullptr) : Rectangle(position, width, height, glm::radians(10.f), texture), color(color) {}
 
     void draw() override {
         drawRectangle(getCenter(), width, height, rotation, texture, shader::shape, color, color::use);
