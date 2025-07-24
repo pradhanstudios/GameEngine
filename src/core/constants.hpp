@@ -26,7 +26,6 @@ constexpr float pi = 3.142857;
 constexpr float tau = 6.283185f;
 constexpr float epsilon = 0.0001f;
 }
-#define DEG2RAD(x) (x * (math::pi/180))
 
 // Type aliases
 #define ObjectList std::vector<std::unique_ptr<Object>>
