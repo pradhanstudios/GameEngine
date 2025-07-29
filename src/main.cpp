@@ -25,41 +25,29 @@ void init() {
     vao::circle = vao::createCircleVao();
 } 
  
-void mainloop() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
-    for (size_t i = 0; i < objects.size(); i++) {
-        if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
-            collision->resetCollision();
-            for (size_t j = 0; j < objects.size(); j++) {
-                if (i != j)
-                    collision->setCollision(objects[i].get(), objects[j].get());
-            }
-        }
-
-        objects[i]->update();
-    }
-
-    for (size_t i = 0; i < objects.size(); i++) {
-        objects[i]->draw();
-    }
- 
-    font::roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::blue);
-
-    glutSwapBuffers();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / display::fps));
-    glutPostRedisplay();
-} 
- 
 int main(int argc, char** argv) { 
-    glutInit(&argc, argv); 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_STENCIL | GLUT_DEPTH); 
+    // Initialize GLFW
+    if (!glfwInit()) {
+        return -1;
+    }
       
-    // giving window size in X- and Y- directon 
-    glutInitWindowSize(display::width, display::height); 
-    glutInitWindowPosition(0, 0); 
-    glutCreateWindow("Game Engine Core Testing"); 
+    // Create a windowed mode window and its OpenGL context
+    glfwWindowHint(GLFW_STENCIL_BITS, 8);
+    glfwWindowHint(GLFW_DEPTH_BITS, 24);
+    GLFWwindow* window = glfwCreateWindow(display::width, display::height, "Game Engine Core Testing", NULL, NULL);
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
 
-    glewInit();
+    // Make the window's context current
+    glfwMakeContextCurrent(window);
+
+    // Initialize GLEW
+    if (glewInit() != GLEW_OK) {
+        return -1;
+    }
+
     init(); 
 
     Texture* rickroll = new Texture(loadBMPTexture("assets/rickroll.bmp"));
@@ -72,11 +60,43 @@ int main(int argc, char** argv) {
     objects[2]->setCenterX(display::width / 2);
     objects[2]->setCenterY(display::height - 200);
      
-    glutDisplayFunc(mainloop); 
-    glutMainLoop(); 
+    // Loop until the user closes the window
+    while (!glfwWindowShouldClose(window)) {
+        // Render here
+        glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+
+        for (size_t i = 0; i < objects.size(); i++) {
+            if (Collision* collision = dynamic_cast<Collision*>(objects[i].get())) {
+                collision->resetCollision();
+                for (size_t j = 0; j < objects.size(); j++) {
+                    if (i != j)
+                        collision->setCollision(objects[i].get(), objects[j].get());
+                }
+            }
+
+            objects[i]->update();
+        }
+
+        for (size_t i = 0; i < objects.size(); i++) {
+            objects[i]->draw();
+        }
+    
+        font::roboto->renderSentence("Hello World", 48, vec2(50.f, 100.f), color::green);
+
+        // Swap front and back buffers
+        glfwSwapBuffers(window);
+
+        // Poll for and process events
+        glfwPollEvents();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / display::fps));
+    }
 
     delete font::roboto;
     delete rickroll;
     
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    
     return 0;
-} 
+}
