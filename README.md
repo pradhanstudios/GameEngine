@@ -4,7 +4,7 @@
 ### OpenGL
 #### GLUT
 ```bash
-sudo apt install freeglut3-dev
+sudo apt install libglfw3-dev
 ```
 #### GLEW
 ```bash
