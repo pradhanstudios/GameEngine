@@ -2,15 +2,17 @@ COMPILER = g++
 WARNING_OPTIONS = -Wextra -Wall -Werror
 SOURCE = src/*.cpp src/core/*.cpp
 INCLUDE = -I/usr/include/freetype2 -I/usr/include/glm
-LIBS = -lGL -lGLEW -lGLU -lglut -lm -lfreetype
+LIBS_PATHS = -L/usr/lib/x86_64-linux-gnu
+LIBS = -lGLEW -lglfw -lGL -lm -lfreetype
 TARGET = GameEngine
+MAIN_CMD = -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS_PATHS) $(LIBS)
 
 
 default:
-	$(COMPILER) -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS)
+	$(COMPILER) $(MAIN_CMD)
 
 warnings:
-	$(COMPILER) -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS) $(WARNING_OPTIONS)
+	$(COMPILER) $(MAIN_CMD) $(WARNING_OPTIONS)
 
 debug:
-	$(COMPILER) -g -o $(TARGET) $(SOURCE) $(INCLUDE) $(LIBS) $(WARNING_OPTIONS)	
+	$(COMPILER) -g $(MAIN_CMD) $(WARNING_OPTIONS)	
