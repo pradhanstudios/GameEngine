@@ -2,7 +2,7 @@
 
 ## Dependencies
 ### OpenGL
-#### GLUT
+#### GLFW
 ```bash
 sudo apt install libglfw3-dev
 ```
